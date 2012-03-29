@@ -721,7 +721,7 @@ QuaggaHelper::GenerateConfigZebra (Ptr<Node> node)
       conf << " ipv6 nd ra-interval 5" << std::endl;
       if ((*i).second.length () != 0)
         {
-          conf << " ipv6 nd prefix-advertisement " << (*i).second << " 30 15" <<std::endl;
+          conf << " ipv6 nd prefix " << (*i).second << " 30 15" <<std::endl;
         }
       conf << " no ipv6 nd suppress-ra" << std::endl;
       conf << "!" << std::endl;
