@@ -39,9 +39,9 @@ static void RunIp (Ptr<Node> node, Time at, std::string str)
   DceApplicationHelper process;
   ApplicationContainer apps;
   process.SetBinary ("ip");
-  process.SetStackSize (1<<16);
-  process.ResetArguments();
-  process.ParseArguments(str.c_str ());
+  process.SetStackSize (1 << 16);
+  process.ResetArguments ();
+  process.ParseArguments (str.c_str ());
   apps = process.Install (node);
   apps.Start (at);
 }
@@ -53,11 +53,12 @@ static void AddAddress (Ptr<Node> node, Time at, const char *name, const char *a
   RunIp (node, at, oss.str ());
 }
 
-int main (int argc, char *argv[]) {
-  // 
+int main (int argc, char *argv[])
+{
+  //
   //  Step 0
   //  Node Basic Configuration
-  // 
+  //
 
   CommandLine cmd;
   cmd.AddValue ("nNodes", "Number of Router nodes", nNodes);
@@ -65,10 +66,10 @@ int main (int argc, char *argv[]) {
   cmd.AddValue ("netStack", "What network stack", netStack);
   cmd.Parse (argc,argv);
 
-  // 
+  //
   //  Step 1
   //  Node Basic Configuration
-  // 
+  //
   NodeContainer nodes;
   nodes.Create (nNodes);
 
@@ -95,24 +96,24 @@ int main (int argc, char *argv[]) {
       Ipv4InterfaceContainer interfaces = ipv4AddrHelper.Assign (devices);
       Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-      processManager.SetNetworkStack("ns3::Ns3SocketFdFactory");
+      processManager.SetNetworkStack ("ns3::Ns3SocketFdFactory");
       processManager.Install (nodes);
 
       QuaggaHelper quagga;
       quagga.EnableBgp (nodes);
-      quagga.BgpAddNeighbor (nodes.Get (0), "10.0.0.2", quagga.GetAsn(nodes.Get (1)));
-      quagga.BgpAddNeighbor (nodes.Get (1), "10.0.0.1", quagga.GetAsn(nodes.Get (0)));
+      quagga.BgpAddNeighbor (nodes.Get (0), "10.0.0.2", quagga.GetAsn (nodes.Get (1)));
+      quagga.BgpAddNeighbor (nodes.Get (1), "10.0.0.1", quagga.GetAsn (nodes.Get (0)));
       quagga.EnableZebraDebug (nodes);
-      quagga.Install (nodes);  
+      quagga.Install (nodes);
 
     }
   else if (netStack == "linux")
     {
       //      processManager.SetLoader ("ns3::DlmLoaderFactory");
-      processManager.SetTaskManagerAttribute ("FiberManagerType", 
+      processManager.SetTaskManagerAttribute ("FiberManagerType",
                                               EnumValue (0));
-      processManager.SetNetworkStack("ns3::LinuxSocketFdFactory",
-                                     "Library", StringValue ("libnet-next-2.6.so"));
+      processManager.SetNetworkStack ("ns3::LinuxSocketFdFactory",
+                                      "Library", StringValue ("libnet-next-2.6.so"));
       processManager.Install (nodes);
 
       // IP address configuration
@@ -126,16 +127,16 @@ int main (int argc, char *argv[]) {
 
       QuaggaHelper quagga;
       quagga.EnableBgp (nodes);
-      quagga.BgpAddNeighbor (nodes.Get (0), "10.0.0.2", quagga.GetAsn(nodes.Get (1)));
-      quagga.BgpAddNeighbor (nodes.Get (1), "10.0.0.1", quagga.GetAsn(nodes.Get (0)));
-      quagga.Install (nodes);  
+      quagga.BgpAddNeighbor (nodes.Get (0), "10.0.0.2", quagga.GetAsn (nodes.Get (1)));
+      quagga.BgpAddNeighbor (nodes.Get (1), "10.0.0.1", quagga.GetAsn (nodes.Get (0)));
+      quagga.Install (nodes);
     }
 
   pointToPoint.EnablePcapAll ("dce-quagga-bgpd");
 
-  // 
+  //
   // Now It's ready to GO!
-  // 
+  //
   if (stopTime != 0)
     {
       Simulator::Stop (Seconds (stopTime));

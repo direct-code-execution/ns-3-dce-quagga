@@ -34,9 +34,9 @@ static void RunIp (Ptr<Node> node, Time at, std::string str)
   DceApplicationHelper process;
   ApplicationContainer apps;
   process.SetBinary ("ip");
-  process.SetStackSize (1<<16);
-  process.ResetArguments();
-  process.ParseArguments(str.c_str ());
+  process.SetStackSize (1 << 16);
+  process.ResetArguments ();
+  process.ParseArguments (str.c_str ());
   apps = process.Install (node);
   apps.Start (at);
 }
@@ -62,10 +62,10 @@ int main (int argc, char *argv[])
   cmd.AddValue ("netStack", "What network stack", netStack);
   cmd.Parse (argc,argv);
 
-  // 
+  //
   //  Step 1
   //  Node Basic Configuration
-  // 
+  //
   NodeContainer nodes;
   nodes.Create (nNodes);
 
@@ -77,11 +77,11 @@ int main (int argc, char *argv[])
   devices = pointToPoint.Install (nodes);
   DceManagerHelper processManager;
 
-  // 
-  // 
+  //
+  //
   // Address Configuration
-  // 
-  // 
+  //
+  //
   if (netStack == "ns3")
     {
       Ipv4AddressHelper ipv4AddrHelper;
@@ -98,21 +98,21 @@ int main (int argc, char *argv[])
       Ipv6InterfaceContainer interfaces = ipv6AddrHelper.Assign (devices.Get (0));
       ipv6AddrHelper.AssignWithoutAddress (devices.Get (1));
 
-      processManager.SetNetworkStack("ns3::Ns3SocketFdFactory");
+      processManager.SetNetworkStack ("ns3::Ns3SocketFdFactory");
       processManager.Install (nodes);
 
       QuaggaHelper quagga;
       quagga.EnableRadvd (nodes.Get (0), "ns3-device1", "2001:db8:0:1::/64");
       quagga.EnableZebraDebug (nodes);
-      quagga.Install (nodes);  
+      quagga.Install (nodes);
     }
   else if (netStack == "linux")
     {
       //      processManager.SetLoader ("ns3::DlmLoaderFactory");
-      processManager.SetTaskManagerAttribute ("FiberManagerType", 
+      processManager.SetTaskManagerAttribute ("FiberManagerType",
                                               EnumValue (0));
-      processManager.SetNetworkStack("ns3::LinuxSocketFdFactory",
-                                     "Library", StringValue ("libnet-next-2.6.so"));
+      processManager.SetNetworkStack ("ns3::LinuxSocketFdFactory",
+                                      "Library", StringValue ("libnet-next-2.6.so"));
       processManager.Install (nodes);
 
       // IP address configuration
@@ -128,15 +128,15 @@ int main (int argc, char *argv[])
 
       QuaggaHelper quagga;
       quagga.EnableRadvd (nodes.Get (0), "sim0", "2001:db8:0:1::/64");
-      quagga.Install (nodes);  
+      quagga.Install (nodes);
     }
 
   pointToPoint.EnablePcapAll ("dce-quagga-radvd");
 
-  // 
+  //
   // Step 9
   // Now It's ready to GO!
-  // 
+  //
   if (stopTime != 0)
     {
       Simulator::Stop (Seconds (stopTime));

@@ -34,9 +34,9 @@ static void RunIp (Ptr<Node> node, Time at, std::string str)
   DceApplicationHelper process;
   ApplicationContainer apps;
   process.SetBinary ("ip");
-  process.SetStackSize (1<<16);
-  process.ResetArguments();
-  process.ParseArguments(str.c_str ());
+  process.SetStackSize (1 << 16);
+  process.ResetArguments ();
+  process.ParseArguments (str.c_str ());
   apps = process.Install (node);
   apps.Start (at);
 }
@@ -62,10 +62,10 @@ int main (int argc, char *argv[])
   cmd.AddValue ("netStack", "What network stack", netStack);
   cmd.Parse (argc,argv);
 
-  // 
+  //
   //  Step 1
   //  Node Basic Configuration
-  // 
+  //
   NodeContainer nodes;
   nodes.Create (nNodes);
 
@@ -77,11 +77,11 @@ int main (int argc, char *argv[])
   devices = pointToPoint.Install (nodes);
   DceManagerHelper processManager;
 
-  // 
-  // 
+  //
+  //
   // Address Configuration
-  // 
-  // 
+  //
+  //
   if (netStack == "ns3")
     {
       Ipv4AddressHelper ipv4AddrHelper;
@@ -96,22 +96,22 @@ int main (int argc, char *argv[])
       Ipv4InterfaceContainer interfaces = ipv4AddrHelper.Assign (devices);
       Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-      processManager.SetNetworkStack("ns3::Ns3SocketFdFactory");
+      processManager.SetNetworkStack ("ns3::Ns3SocketFdFactory");
       processManager.Install (nodes);
 
       QuaggaHelper quagga;
       quagga.EnableOspf (nodes);
       quagga.EnableOspfDebug (nodes);
       quagga.EnableZebraDebug (nodes);
-      quagga.Install (nodes);  
+      quagga.Install (nodes);
     }
   else if (netStack == "linux")
     {
       //      processManager.SetLoader ("ns3::DlmLoaderFactory");
-      processManager.SetTaskManagerAttribute ("FiberManagerType", 
+      processManager.SetTaskManagerAttribute ("FiberManagerType",
                                               EnumValue (0));
-      processManager.SetNetworkStack("ns3::LinuxSocketFdFactory",
-                                     "Library", StringValue ("libnet-next-2.6.so"));
+      processManager.SetNetworkStack ("ns3::LinuxSocketFdFactory",
+                                      "Library", StringValue ("libnet-next-2.6.so"));
       processManager.Install (nodes);
 
       // IP address configuration
@@ -128,29 +128,29 @@ int main (int argc, char *argv[])
 
       QuaggaHelper quagga;
       quagga.UseManualZebraConfig (nodes);
-      quagga.Install (nodes);  
+      quagga.Install (nodes);
 
       DceApplicationHelper process;
       ApplicationContainer apps;
 
       //      GenerateConfigOspf (node);
       process.ResetArguments ();
-      process.SetStackSize (1<<16);
+      process.SetStackSize (1 << 16);
       process.SetBinary ("ospfd");
-      process.ParseArguments("-f /usr/local/etc/ospfd.conf");
+      process.ParseArguments ("-f /usr/local/etc/ospfd.conf");
       apps = process.Install (nodes);
       for (uint32_t i = 0; i < nodes.GetN (); i++)
         {
-          apps.Get(i)->SetStartTime (Seconds (2.0 + 1 * i));
+          apps.Get (i)->SetStartTime (Seconds (2.0 + 1 * i));
         }
     }
 
   pointToPoint.EnablePcapAll ("dce-quagga-ospfd");
 
-  // 
+  //
   // Step 9
   // Now It's ready to GO!
-  // 
+  //
   if (stopTime != 0)
     {
       Simulator::Stop (Seconds (stopTime));

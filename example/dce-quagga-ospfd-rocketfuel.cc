@@ -49,10 +49,10 @@ SetRlimit ()
   limit.rlim_cur = 1000000;
   limit.rlim_max = 1000000;
 
-  ret = setrlimit(RLIMIT_NOFILE, &limit);
+  ret = setrlimit (RLIMIT_NOFILE, &limit);
   if (ret == -1)
     {
-       perror ("setrlimit");
+      perror ("setrlimit");
     }
   return;
 }
@@ -75,7 +75,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("stopTime", "Time to stop(seconds)", stopTime);
   cmd.Parse (argc,argv);
 
-  // 
+  //
   // Step o
   // Read Topology information
   // ------------------------------------------------------------
@@ -86,15 +86,15 @@ main (int argc, char *argv[])
 
   Ptr<TopologyReader> inFile = 0;
   TopologyReaderHelper topoHelp;
-  
+
   NodeContainer nodes;
-  
+
   std::string format ("Rocketfuel");
   std::string input ("example/3967.weights.intra");
 
-  topoHelp.SetFileName(input);
-  topoHelp.SetFileType(format);
-  inFile = topoHelp.GetTopologyReader();
+  topoHelp.SetFileName (input);
+  topoHelp.SetFileType (format);
+  inFile = topoHelp.GetTopologyReader ();
 
   if (inFile != 0)
     {
@@ -111,7 +111,7 @@ main (int argc, char *argv[])
       NS_LOG_ERROR ("Problems reading the topology file. Failing.");
       return -1;
     }
-  NS_LOG_INFO ("Rocketfuel topology created with " << nodes.GetN () << " nodes and " << 
+  NS_LOG_INFO ("Rocketfuel topology created with " << nodes.GetN () << " nodes and " <<
                inFile->LinksSize () << " links (from " << input << ")");
 
   // Tricky things XXX
@@ -123,10 +123,10 @@ main (int argc, char *argv[])
     }
 #endif
 
-  // 
+  //
   //  Step 1
   //  Node Basic Configuration
-  // 
+  //
 
   // Internet stack install
   InternetStackHelper stack;    // IPv4 is required for GlobalRouteMan
@@ -134,11 +134,11 @@ main (int argc, char *argv[])
   stack.SetRoutingHelper (ipv4RoutingHelper);
   stack.Install (nodes);
 
-  // 
+  //
   // Step 2
   // Address Configuration
-  // 
-  // 
+  //
+  //
   Ipv4AddressHelper ipv4AddrHelper;
 
   NS_LOG_INFO ("creating ip4 addresses");
@@ -177,9 +177,9 @@ main (int argc, char *argv[])
     }
 
 
-  //  
+  //
   //  Application configuration for Nodes
-  // 
+  //
 
   NS_LOG_INFO ("creating quagga process");
   //run quagga programs in every node
@@ -187,42 +187,42 @@ main (int argc, char *argv[])
   processManager.SetLoader ("ns3::DlmLoaderFactory");
   QuaggaHelper quagga;
 
-  // 
+  //
   // Step 3
   // Traffic configuration
-  // 
+  //
 #ifdef NS3_MPI
   if (systemId == 0)
 #endif
-    {
-      Ptr<V4Ping> app = CreateObject<V4Ping> ();
-      //Ptr<Ipv4> ipv4Server = nodes.Get (25)->GetObject<Ipv4> ();
-      Ptr<Ipv4> ipv4Server = nodes.Get (nodes.GetN () - 1)->GetObject<Ipv4> ();
-      app->SetAttribute ("Remote", Ipv4AddressValue (ipv4Server->GetAddress (1, 0).GetLocal ()));
-      app->SetAttribute ("Verbose", BooleanValue (true));
-      nodes.Get (0)->AddApplication (app);
-      app->SetStartTime (Seconds (20.0));
-      app->SetStopTime (Seconds (stopTime));
-    }
+  {
+    Ptr<V4Ping> app = CreateObject<V4Ping> ();
+    //Ptr<Ipv4> ipv4Server = nodes.Get (25)->GetObject<Ipv4> ();
+    Ptr<Ipv4> ipv4Server = nodes.Get (nodes.GetN () - 1)->GetObject<Ipv4> ();
+    app->SetAttribute ("Remote", Ipv4AddressValue (ipv4Server->GetAddress (1, 0).GetLocal ()));
+    app->SetAttribute ("Verbose", BooleanValue (true));
+    nodes.Get (0)->AddApplication (app);
+    app->SetStartTime (Seconds (20.0));
+    app->SetStopTime (Seconds (stopTime));
+  }
 
   for (uint32_t i = 0; i < nodes.GetN (); i++)
     {
 #ifdef NS3_MPI
       if (i % systemCount == systemId % systemCount)
 #endif
-        {
-          //     std::cout << "[" << systemId << "] start quagga Node " << i << std::endl;
-          processManager.Install (nodes.Get (i));
-          quagga.EnableOspf (nodes.Get (i));
-          quagga.EnableOspfDebug (nodes.Get (i));
-          quagga.Install (nodes.Get (i));
-        }
+      {
+        //     std::cout << "[" << systemId << "] start quagga Node " << i << std::endl;
+        processManager.Install (nodes.Get (i));
+        quagga.EnableOspf (nodes.Get (i));
+        quagga.EnableOspfDebug (nodes.Get (i));
+        quagga.Install (nodes.Get (i));
+      }
     }
 
-  // 
+  //
   // Step 9
   // Now It's ready to GO!
-  // 
+  //
   if (stopTime != 0)
     {
       Simulator::Stop (Seconds (stopTime));

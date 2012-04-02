@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("QuaggaHelper");
 
 namespace ns3 {
 
-class QuaggaConfig: public Object
+class QuaggaConfig : public Object
 {
 private:
   static int index;
@@ -48,16 +48,16 @@ public:
   {
   }
 
-  static TypeId 
+  static TypeId
   GetTypeId (void)
   {
     static TypeId tid = TypeId ("ns3::QuaggaConfig")
       .SetParent<Object> ()
       .AddConstructor<QuaggaConfig> ()
-      ;
+    ;
     return tid;
   }
-  TypeId 
+  TypeId
   GetInstanceTypeId (void) const
   {
     return GetTypeId ();
@@ -68,9 +68,9 @@ public:
   {
     m_filename = filename;
   }
-  
+
   std::string
-  GetFilename () const 
+  GetFilename () const
   {
     return m_filename;
   }
@@ -117,16 +117,16 @@ public:
 
   bool m_ospfdebug;
 
-  static TypeId 
+  static TypeId
   GetTypeId (void)
   {
     static TypeId tid = TypeId ("ns3::OspfConfig")
       .SetParent<Object> ()
       .AddConstructor<OspfConfig> ()
-      ;
+    ;
     return tid;
   }
-  TypeId 
+  TypeId
   GetInstanceTypeId (void) const
   {
     return GetTypeId ();
@@ -145,9 +145,9 @@ public:
   {
     m_filename = filename;
   }
-  
+
   std::string
-  GetFilename () const 
+  GetFilename () const
   {
     return m_filename;
   }
@@ -167,15 +167,15 @@ public:
         os << "debug ospf packet all " << std::endl;
       }
 
-    for (std::vector<uint32_t>::iterator i = iflist->begin (); 
+    for (std::vector<uint32_t>::iterator i = iflist->begin ();
          i != iflist->end (); ++i)
       {
         os << "interface ns3-device" << (*i) << std::endl;
       }
 
-    os << "router ospf " << std::endl; 
+    os << "router ospf " << std::endl;
     //    os << "  ospf router-id " << m_routerId << std::endl;
-    for (std::map<std::string, uint32_t>::iterator i = networks->begin (); 
+    for (std::map<std::string, uint32_t>::iterator i = networks->begin ();
          i != networks->end (); ++i)
       {
         os << "  network " << (*i).first << " area " << (*i).second << std::endl;
@@ -187,7 +187,7 @@ public:
   uint32_t m_routerId;
 };
 
-class BgpConfig: public Object
+class BgpConfig : public Object
 {
 private:
   static int index;
@@ -200,59 +200,59 @@ private:
   std::string m_filename;
 
 public:
-  BgpConfig()
+  BgpConfig ()
   {
-    neighbors = new std::vector<std::string>();
-    neighbor_asn = new std::map<std::string, uint32_t>();
-    networks = new std::vector<std::string>();
+    neighbors = new std::vector<std::string> ();
+    neighbor_asn = new std::map<std::string, uint32_t> ();
+    networks = new std::vector<std::string> ();
     isDefaultOriginate = false;
   }
-  ~BgpConfig()
+  ~BgpConfig ()
   {
     delete neighbors;
     delete neighbor_asn;
     delete networks;
   }
-  static TypeId 
+  static TypeId
   GetTypeId (void)
   {
     static TypeId tid = TypeId ("ns3::BgpConfig")
       .SetParent<Object> ()
       .AddConstructor<BgpConfig> ()
-      ;
+    ;
     return tid;
   }
-  TypeId 
+  TypeId
   GetInstanceTypeId (void) const
   {
     return GetTypeId ();
   }
 
-  void 
+  void
   SetAsn (uint32_t lasn)
   {
     asn = lasn + 1;
     {
       std::stringstream ss;
       ss << "192.168.0." << asn;
-      router_id = ss.str();
+      router_id = ss.str ();
     }
   }
 
-  uint32_t GetAsn()
+  uint32_t GetAsn ()
   {
     return asn;
   }
-  void AddNeighbor(std::string n, uint32_t asn)
+  void AddNeighbor (std::string n, uint32_t asn)
   {
-    neighbors->push_back(n);
-    neighbor_asn->insert( std::map<std::string, uint32_t>::value_type( n, asn ));
+    neighbors->push_back (n);
+    neighbor_asn->insert ( std::map<std::string, uint32_t>::value_type ( n, asn ));
   }
-  void addNetwork(std::string n)
+  void addNetwork (std::string n)
   {
-    networks->push_back(n);
+    networks->push_back (n);
   }
-  void defaultOriginate()
+  void defaultOriginate ()
   {
     isDefaultOriginate = true;
   }
@@ -262,9 +262,9 @@ public:
   {
     m_filename = filename;
   }
-  
+
   std::string
-  GetFilename () const 
+  GetFilename () const
   {
     return m_filename;
   }
@@ -280,8 +280,8 @@ public:
        << "debug bgp events" << std::endl
        << "debug bgp updates" << std::endl
        << "router bgp " << asn << std::endl
-       << "  bgp router-id " << router_id << std::endl;    
-    for( std::vector<std::string>::iterator it = neighbors->begin(); it != neighbors->end(); it++ )
+       << "  bgp router-id " << router_id << std::endl;
+    for ( std::vector<std::string>::iterator it = neighbors->begin (); it != neighbors->end (); it++ )
       {
         os << "  neighbor " << *it << " remote-as " << (*neighbor_asn)[*it] << std::endl;
         os << "  neighbor " << *it << " advertisement-interval 5"  << std::endl;
@@ -289,16 +289,16 @@ public:
     os << "  redistribute connected" << std::endl;
     os << "  redistribute kernel" << std::endl;
     os << "  address-family ipv4 unicast" << std::endl;
-    for( std::vector<std::string>::iterator it = neighbors->begin(); it != neighbors->end(); it++ )
+    for ( std::vector<std::string>::iterator it = neighbors->begin (); it != neighbors->end (); it++ )
       {
         os << "   neighbor " << *it << " activate" << std::endl;
         os << "   neighbor " << *it << " next-hop-self" << std::endl;
-        if( isDefaultOriginate == true )
+        if ( isDefaultOriginate == true )
           {
             os << "   neighbor " << *it << " default-originate" << std::endl;
           }
       }
-    for( std::vector<std::string>::iterator it = networks->begin(); it != networks->end(); it++ )
+    for ( std::vector<std::string>::iterator it = networks->begin (); it != networks->end (); it++ )
       {
         os << "   network " << *it << std::endl;
       }
@@ -307,35 +307,34 @@ public:
   }
 };
 
-class Ospf6Config: public Object
+class Ospf6Config : public Object
 {
 private:
-
 public:
   std::vector<std::string> *m_enable_if;
   bool m_ospf6debug;
   uint32_t m_router_id;
   std::string m_filename;
 
-  Ospf6Config()
+  Ospf6Config ()
   {
-    m_enable_if = new std::vector<std::string>();
+    m_enable_if = new std::vector<std::string> ();
     m_ospf6debug = false;
   }
-  ~Ospf6Config()
+  ~Ospf6Config ()
   {
     delete m_enable_if;
   }
-  static TypeId 
+  static TypeId
   GetTypeId (void)
   {
     static TypeId tid = TypeId ("ns3::Ospf6Config")
       .SetParent<Object> ()
       .AddConstructor<Ospf6Config> ()
-      ;
+    ;
     return tid;
   }
-  TypeId 
+  TypeId
   GetInstanceTypeId (void) const
   {
     return GetTypeId ();
@@ -347,9 +346,9 @@ public:
   {
     m_filename = filename;
   }
-  
+
   std::string
-  GetFilename () const 
+  GetFilename () const
   {
     return m_filename;
   }
@@ -371,7 +370,7 @@ public:
         os << "debug ospf6 interface " << std::endl;
       }
 
-    for (std::vector<std::string>::iterator i = m_enable_if->begin (); 
+    for (std::vector<std::string>::iterator i = m_enable_if->begin ();
          i != m_enable_if->end (); ++i)
       {
         os << "interface " << (*i) << std::endl;
@@ -379,7 +378,7 @@ public:
         os << "!" << std::endl;
       }
 
-    for (std::vector<std::string>::iterator i = m_enable_if->begin (); 
+    for (std::vector<std::string>::iterator i = m_enable_if->begin ();
          i != m_enable_if->end (); ++i)
       {
         if (i == m_enable_if->begin ())
@@ -403,7 +402,7 @@ QuaggaHelper::QuaggaHelper ()
 {
 }
 
-void 
+void
 QuaggaHelper::SetAttribute (std::string name, const AttributeValue &value)
 {
 }
@@ -412,9 +411,9 @@ QuaggaHelper::SetAttribute (std::string name, const AttributeValue &value)
 void
 QuaggaHelper::EnableOspf (NodeContainer nodes)
 {
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
     {
-      Ptr<OspfConfig> ospf_conf = nodes.Get (i)->GetObject<OspfConfig>();
+      Ptr<OspfConfig> ospf_conf = nodes.Get (i)->GetObject<OspfConfig> ();
       if (!ospf_conf)
         {
           ospf_conf = new OspfConfig ();
@@ -429,9 +428,9 @@ QuaggaHelper::EnableOspf (NodeContainer nodes)
 void
 QuaggaHelper::EnableOspfDebug (NodeContainer nodes)
 {
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
     {
-      Ptr<OspfConfig> ospf_conf = nodes.Get (i)->GetObject<OspfConfig>();
+      Ptr<OspfConfig> ospf_conf = nodes.Get (i)->GetObject<OspfConfig> ();
       if (!ospf_conf)
         {
           ospf_conf = new OspfConfig ();
@@ -446,9 +445,9 @@ QuaggaHelper::EnableOspfDebug (NodeContainer nodes)
 void
 QuaggaHelper::EnableZebraDebug (NodeContainer nodes)
 {
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
     {
-      Ptr<QuaggaConfig> zebra_conf = nodes.Get (i)->GetObject<QuaggaConfig>();
+      Ptr<QuaggaConfig> zebra_conf = nodes.Get (i)->GetObject<QuaggaConfig> ();
       if (!zebra_conf)
         {
           zebra_conf = new QuaggaConfig ();
@@ -462,7 +461,7 @@ QuaggaHelper::EnableZebraDebug (NodeContainer nodes)
 void
 QuaggaHelper::EnableRadvd (Ptr<Node> node, const char *ifname, const char *prefix)
 {
-  Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig>();
+  Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig> ();
   if (!zebra_conf)
     {
       zebra_conf = new QuaggaConfig ();
@@ -470,7 +469,7 @@ QuaggaHelper::EnableRadvd (Ptr<Node> node, const char *ifname, const char *prefi
     }
 
   zebra_conf->m_radvd_if->insert (
-                                  std::map<std::string, std::string>::value_type (std::string(ifname), std::string(prefix)));
+    std::map<std::string, std::string>::value_type (std::string (ifname), std::string (prefix)));
 
   return;
 }
@@ -479,14 +478,14 @@ QuaggaHelper::EnableRadvd (Ptr<Node> node, const char *ifname, const char *prefi
 void
 QuaggaHelper::EnableHomeAgentFlag (Ptr<Node> node, const char *ifname)
 {
-  Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig>();
+  Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig> ();
   if (!zebra_conf)
     {
       zebra_conf = new QuaggaConfig ();
       node->AggregateObject (zebra_conf);
     }
 
-  zebra_conf->m_haflag_if->push_back (std::string(ifname));
+  zebra_conf->m_haflag_if->push_back (std::string (ifname));
 
   return;
 }
@@ -494,9 +493,9 @@ QuaggaHelper::EnableHomeAgentFlag (Ptr<Node> node, const char *ifname)
 void
 QuaggaHelper::UseManualZebraConfig (NodeContainer nodes)
 {
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
     {
-      Ptr<QuaggaConfig> zebra_conf = nodes.Get (i)->GetObject<QuaggaConfig>();
+      Ptr<QuaggaConfig> zebra_conf = nodes.Get (i)->GetObject<QuaggaConfig> ();
       if (!zebra_conf)
         {
           zebra_conf = new QuaggaConfig ();
@@ -512,9 +511,9 @@ QuaggaHelper::UseManualZebraConfig (NodeContainer nodes)
 void
 QuaggaHelper::EnableBgp (NodeContainer nodes)
 {
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
     {
-      Ptr<BgpConfig> bgp_conf = nodes.Get (i)->GetObject<BgpConfig>();
+      Ptr<BgpConfig> bgp_conf = nodes.Get (i)->GetObject<BgpConfig> ();
       if (!bgp_conf)
         {
           bgp_conf = CreateObject<BgpConfig> ();
@@ -529,7 +528,7 @@ QuaggaHelper::EnableBgp (NodeContainer nodes)
 uint32_t
 QuaggaHelper::GetAsn (Ptr<Node> node)
 {
-  Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig>();
+  Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig> ();
   if (!bgp_conf)
     {
       return 0;
@@ -540,7 +539,7 @@ QuaggaHelper::GetAsn (Ptr<Node> node)
 void
 QuaggaHelper::BgpAddNeighbor (Ptr<Node> node, std::string neighbor, uint32_t asn)
 {
-  Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig>();
+  Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig> ();
   if (!bgp_conf)
     {
       bgp_conf = CreateObject<BgpConfig> ();
@@ -555,16 +554,16 @@ QuaggaHelper::BgpAddNeighbor (Ptr<Node> node, std::string neighbor, uint32_t asn
 void
 QuaggaHelper::EnableOspf6 (NodeContainer nodes, const char *ifname)
 {
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
     {
-      Ptr<Ospf6Config> ospf6_conf = nodes.Get (i)->GetObject<Ospf6Config>();
+      Ptr<Ospf6Config> ospf6_conf = nodes.Get (i)->GetObject<Ospf6Config> ();
       if (!ospf6_conf)
         {
           ospf6_conf = new Ospf6Config ();
           nodes.Get (i)->AggregateObject (ospf6_conf);
         }
 
-      ospf6_conf->m_enable_if->push_back (std::string(ifname));
+      ospf6_conf->m_enable_if->push_back (std::string (ifname));
       ospf6_conf->m_router_id = i;
     }
 
@@ -574,9 +573,9 @@ QuaggaHelper::EnableOspf6 (NodeContainer nodes, const char *ifname)
 void
 QuaggaHelper::EnableOspf6Debug (NodeContainer nodes)
 {
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
     {
-      Ptr<Ospf6Config> ospf6_conf = nodes.Get (i)->GetObject<Ospf6Config>();
+      Ptr<Ospf6Config> ospf6_conf = nodes.Get (i)->GetObject<Ospf6Config> ();
       if (!ospf6_conf)
         {
           ospf6_conf = new Ospf6Config ();
@@ -590,7 +589,7 @@ QuaggaHelper::EnableOspf6Debug (NodeContainer nodes)
 void
 QuaggaHelper::GenerateConfigZebra (Ptr<Node> node)
 {
-  Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig>();
+  Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig> ();
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
 
   NS_LOG_DEBUG ("ipv4->GetNInterfaces () = " << ipv4->GetNInterfaces ());
@@ -600,14 +599,14 @@ QuaggaHelper::GenerateConfigZebra (Ptr<Node> node)
 //       Ipv4Address addr = ipv4->GetAddress (i, 0).GetLocal ();
 //       Ipv4Mask mask = ipv4->GetAddress (i, 0).GetMask ();
 //       Ipv4Address prefix = addr.CombineMask (mask);
-// 
+//
 //       NS_LOG_DEBUG ("address: " << addr);
-// 
+//
 //       if (addr.IsEqual (Ipv4Address::GetLoopback()))
 //         {
 //           continue;
 //         }
-//       
+//
 //       zebra_conf->iflist.push_back (i);
 //     }
 
@@ -623,7 +622,7 @@ QuaggaHelper::GenerateConfigZebra (Ptr<Node> node)
   conf_dir << "/etc/";
   ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
 
-  conf_file << conf_dir.str() << "/zebra.conf";
+  conf_file << conf_dir.str () << "/zebra.conf";
   zebra_conf->SetFilename ("/usr/local/etc/zebra.conf");
 
   if (zebra_conf->m_usemanualconf)
@@ -643,21 +642,21 @@ QuaggaHelper::GenerateConfigZebra (Ptr<Node> node)
     }
 
   // radvd
-  for (std::map<std::string, std::string>::iterator i = zebra_conf->m_radvd_if->begin (); 
+  for (std::map<std::string, std::string>::iterator i = zebra_conf->m_radvd_if->begin ();
        i != zebra_conf->m_radvd_if->end (); ++i)
     {
       conf << "interface " << (*i).first << std::endl;
       conf << " ipv6 nd ra-interval 5" << std::endl;
       if ((*i).second.length () != 0)
         {
-          conf << " ipv6 nd prefix " << (*i).second << " 30 15" <<std::endl;
+          conf << " ipv6 nd prefix " << (*i).second << " 30 15" << std::endl;
         }
       conf << " no ipv6 nd suppress-ra" << std::endl;
       conf << "!" << std::endl;
     }
 
   // ha flag
-  for (std::vector<std::string>::iterator i = zebra_conf->m_haflag_if->begin (); 
+  for (std::vector<std::string>::iterator i = zebra_conf->m_haflag_if->begin ();
        i != zebra_conf->m_haflag_if->end (); ++i)
     {
       conf << "interface " << (*i) << std::endl;
@@ -673,22 +672,22 @@ QuaggaHelper::GenerateConfigOspf (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (node);
 
-  Ptr<OspfConfig> ospf_conf = node->GetObject<OspfConfig>();
+  Ptr<OspfConfig> ospf_conf = node->GetObject<OspfConfig> ();
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  
-  ospf_conf->m_routerId = 1+node->GetId ();
+
+  ospf_conf->m_routerId = 1 + node->GetId ();
 
   NS_LOG_DEBUG ("ipv4->GetNInterfaces () = " << ipv4->GetNInterfaces ());
 
-  for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i ++)
+  for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++)
     {
       Ipv4Address addr = ipv4->GetAddress (i, 0).GetLocal ();
       Ipv4Mask mask = ipv4->GetAddress (i, 0).GetMask ();
       Ipv4Address prefix = addr.CombineMask (mask);
-      
+
       NS_LOG_DEBUG ("address: " << addr);
 
-      if (addr.IsEqual (Ipv4Address::GetLoopback()))
+      if (addr.IsEqual (Ipv4Address::GetLoopback ()))
         {
           continue;
         }
@@ -709,7 +708,7 @@ QuaggaHelper::GenerateConfigOspf (Ptr<Node> node)
   conf_dir << "/etc/";
   ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
 
-  conf_file << conf_dir.str() << "/ospfd.conf";
+  conf_file << conf_dir.str () << "/ospfd.conf";
   ospf_conf->SetFilename ("/usr/local/etc/ospfd.conf");
 
   std::ofstream conf;
@@ -722,7 +721,7 @@ QuaggaHelper::GenerateConfigOspf (Ptr<Node> node)
 void
 QuaggaHelper::GenerateConfigBgp (Ptr<Node> node)
 {
-  Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig>();
+  Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig> ();
 
   // config generation
   std::stringstream conf_dir, conf_file;
@@ -736,7 +735,7 @@ QuaggaHelper::GenerateConfigBgp (Ptr<Node> node)
   conf_dir << "/etc/";
   ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
 
-  conf_file << conf_dir.str() << "/bgpd.conf";
+  conf_file << conf_dir.str () << "/bgpd.conf";
   bgp_conf->SetFilename ("/usr/local/etc/bgpd.conf");
 
   std::ofstream conf;
@@ -749,7 +748,7 @@ QuaggaHelper::GenerateConfigBgp (Ptr<Node> node)
 void
 QuaggaHelper::GenerateConfigOspf6 (Ptr<Node> node)
 {
-  Ptr<Ospf6Config> ospf6_conf = node->GetObject<Ospf6Config>();
+  Ptr<Ospf6Config> ospf6_conf = node->GetObject<Ospf6Config> ();
 
   // config generation
   std::stringstream conf_dir, conf_file;
@@ -763,7 +762,7 @@ QuaggaHelper::GenerateConfigOspf6 (Ptr<Node> node)
   conf_dir << "/etc/";
   ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
 
-  conf_file << conf_dir.str() << "/ospf6d.conf";
+  conf_file << conf_dir.str () << "/ospf6d.conf";
   ospf6_conf->SetFilename ("/usr/local/etc/ospf6d.conf");
   std::ofstream conf;
   conf.open (conf_file.str ().c_str ());
@@ -797,12 +796,12 @@ QuaggaHelper::Install (NodeContainer c)
 }
 
 ApplicationContainer
-QuaggaHelper::InstallPriv (Ptr<Node> node) 
+QuaggaHelper::InstallPriv (Ptr<Node> node)
 {
   DceApplicationHelper process;
   ApplicationContainer apps;
 
-  Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig>();
+  Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig> ();
   if (!zebra_conf)
     {
       zebra_conf = new QuaggaConfig ();
@@ -812,12 +811,12 @@ QuaggaHelper::InstallPriv (Ptr<Node> node)
   process.SetBinary ("zebra");
   process.AddArguments ("-f", zebra_conf->GetFilename ());
   process.AddArguments ("-i", "/usr/local/etc/zebra.pid");
-  process.SetStackSize (1<<16);
+  process.SetStackSize (1 << 16);
   apps.Add (process.Install (node));
-  apps.Get(0)->SetStartTime (Seconds (1.0 + 0.01 * node->GetId ()));
+  apps.Get (0)->SetStartTime (Seconds (1.0 + 0.01 * node->GetId ()));
   node->AddApplication (apps.Get (0));
 
-  Ptr<OspfConfig> ospf_conf = node->GetObject<OspfConfig>();
+  Ptr<OspfConfig> ospf_conf = node->GetObject<OspfConfig> ();
   // OSPF
   if (ospf_conf)
     {
@@ -828,11 +827,11 @@ QuaggaHelper::InstallPriv (Ptr<Node> node)
       process.AddArguments ("-f", ospf_conf->GetFilename ());
       process.AddArguments ("-i", "/usr/local/etc/ospfd.pid");
       apps.Add (process.Install (node));
-      apps.Get(1)->SetStartTime (Seconds (5.0 + 0.1 * node->GetId ()));
+      apps.Get (1)->SetStartTime (Seconds (5.0 + 0.1 * node->GetId ()));
       node->AddApplication (apps.Get (1));
     }
 
-  Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig>();
+  Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig> ();
   // BGP
   if (bgp_conf)
     {
@@ -842,12 +841,12 @@ QuaggaHelper::InstallPriv (Ptr<Node> node)
       process.AddArguments ("-f", bgp_conf->GetFilename ());
       process.AddArguments ("-i", "/usr/local/etc/bgpd.pid");
       apps = process.Install (node);
-      apps.Get(0)->SetStartTime (Seconds (5.0 + 0.3 * node->GetId ()));
+      apps.Get (0)->SetStartTime (Seconds (5.0 + 0.3 * node->GetId ()));
       //      apps.Get(0)->SetStartTime (Seconds (1.2 + 0.1 * node->GetId ()));
       node->AddApplication (apps.Get (0));
     }
 
-  Ptr<Ospf6Config> ospf6_conf = node->GetObject<Ospf6Config>();
+  Ptr<Ospf6Config> ospf6_conf = node->GetObject<Ospf6Config> ();
   // OSPF6
   if (ospf6_conf)
     {
@@ -857,7 +856,7 @@ QuaggaHelper::InstallPriv (Ptr<Node> node)
       process.AddArguments ("-f", ospf6_conf->GetFilename ());
       process.AddArguments ("-i", "/usr/local/etc/ospf6d.pid");
       apps = process.Install (node);
-      apps.Get(0)->SetStartTime (Seconds (5.0 + 0.5 * node->GetId ()));
+      apps.Get (0)->SetStartTime (Seconds (5.0 + 0.5 * node->GetId ()));
       node->AddApplication (apps.Get (0));
     }
 

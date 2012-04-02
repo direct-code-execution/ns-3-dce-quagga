@@ -45,7 +45,7 @@ std::string netStack = "ns3";
 void TestDisable (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (node->GetId ());
-  
+
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   NS_ASSERT_MSG (ipv4 != 0, "ipv4 should not be null");
 
@@ -64,47 +64,49 @@ int main (int argc, char *argv[])
   PointToPointHelper p2p;
   InternetStackHelper stack;
   Ipv4DceRoutingHelper ipv4RoutingHelper;
-  
+
   stack.SetRoutingHelper (ipv4RoutingHelper);
 
   PointToPointGridHelper grid (nNodes, nNodes, p2p);
   grid.InstallStack (stack);
 
   grid.AssignIpv4Addresses (
-                            Ipv4AddressHelper("10.1.0.0", "255.255.255.0"),
-                            Ipv4AddressHelper("10.2.0.0", "255.255.255.0")
-                            );
+    Ipv4AddressHelper ("10.1.0.0", "255.255.255.0"),
+    Ipv4AddressHelper ("10.2.0.0", "255.255.255.0")
+    );
 
   Ptr<DceManagerHelper> dceManager = CreateObject<DceManagerHelper> ();
-  dceManager->SetNetworkStack("ns3::Ns3SocketFdFactory");
+  dceManager->SetNetworkStack ("ns3::Ns3SocketFdFactory");
 
   QuaggaHelper quagga;
-  
+
   ApplicationContainer apps;
 
-  for (int i=0; i<nNodes; i++)
-    for (int j=0; j<nNodes; j++)
-      {
-        Ptr<Node> node = grid.GetNode (i,j);
-        dceManager->Install (node);
-        quagga.EnableOspf (node);
-        quagga.EnableOspfDebug (node);
-        quagga.EnableZebraDebug (node);
-        apps.Add (quagga.Install (node));
-      }
+  for (int i = 0; i < nNodes; i++)
+    {
+      for (int j = 0; j < nNodes; j++)
+        {
+          Ptr<Node> node = grid.GetNode (i,j);
+          dceManager->Install (node);
+          quagga.EnableOspf (node);
+          quagga.EnableOspfDebug (node);
+          quagga.EnableZebraDebug (node);
+          apps.Add (quagga.Install (node));
+        }
+    }
 
-  apps.Stop (Seconds(150.0));
+  apps.Stop (Seconds (150.0));
 
   Simulator::ScheduleWithContext (grid.GetNode (0,0)->GetId (),
                                   Seconds (80.0), TestDisable, grid.GetNode (0,0));
 
   Config::Connect ("/NodeList/*/$ns3::DceManager/Exit", MakeCallback (&procExit));
 
-  // Trace routing tables 
+  // Trace routing tables
   Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("routes.log", std::ios::out);
   ipv4RoutingHelper.PrintRoutingTableAllEvery (Seconds (10), routingStream);
 
-  Simulator::Stop (Seconds(160.0));
+  Simulator::Stop (Seconds (160.0));
   Simulator::Run ();
   Simulator::Destroy ();
 
