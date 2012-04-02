@@ -74,25 +74,97 @@ public:
 
   /**
    * \brief Configure ping applications attribute 
+   *
    * \param name   attribute's name
    * \param value  attribute's value
    */
   void SetAttribute (std::string name, const AttributeValue &value);
 
+  /**
+   * \brief Enable the ospfd daemon to the nodes.
+   *
+   * \param nodes The node(s) to enable OSPFv2 (quagga ospfd).
+   */
   void EnableOspf (NodeContainer nodes);
+
+  /**
+   * \brief Configure the debug option to the ospfd daemon (via debug ospf xxx).
+   *
+   * \param nodes The node(s) to configure the options.
+   */
   void EnableOspfDebug (NodeContainer nodes);
-  void EnableTdpNina (NodeContainer nodes);
-  void EnableTdpFixedRouter (NodeContainer nodes);
+
+  /**
+   * \brief Configure the debug option to the zebra daemon (via debug zebra xxx).
+   *
+   * \param nodes The node(s) to configure the options.
+   */
   void EnableZebraDebug (NodeContainer nodes);
+
+  /**
+   * \brief Enable Router Advertisement configuration to the zebra
+   * daemon (via no ipv6 nd suppress-ra xxx).
+   *
+   * \param node   The node to configure the options.
+   * \param ifname  The string of the interface name to enable this option.
+   * \param prefix  The string of the network prefix to advertise.
+   */
   void EnableRadvd (Ptr<Node> node, const char *ifname, const char *prefix);
-  void EnableEgressIF (Ptr<Node> node, const char *ifname);
+
+  /**
+   * \brief Configure HomeAgent Information Option (RFC 3775) in
+   * Router Advertisement to the zebra daemon (via ipv6 nd
+   * home-agent-config-flag).
+   *
+   * \param ifname The string of the interface name to enable this
+   * option.
+   */
   void EnableHomeAgentFlag (Ptr<Node> node, const char *ifname);
-  void UseManualConfig (NodeContainer nodes);
-  void EnableNat (NodeContainer nodes);
+
+  /**
+   * \brief Indicate the config file to edit by manually (locate
+   * zebra.conf at files-X/usr/local/etc/zebra.conf).
+   *
+   * \param nodes The node(s) to configure the options.
+   */
+  void UseManualZebraConfig (NodeContainer nodes);
+
+  /**
+   * \brief Enable the bgpd daemon to the nodes.
+   *
+   * \param nodes The node(s) to enable BGP (quagga bgpd).
+   */
   void EnableBgp (NodeContainer nodes);
+
+  /**
+   * \brief Get the Autonomous System number (AS number) of the nodes.
+   *
+   * \param node The node to obtain ASN.
+   */
   uint32_t GetAsn (Ptr<Node> node);
-  void BgpAddNeighbor (Ptr<Node> node, std::string n, uint32_t asn);
+
+  /**
+   * \brief Configure the neighbor of BGP peer to exchange the route
+   * information to the bgp daemon (via neighbor remote-as command).
+   *
+   * \param neighbor The string of the experssion of a remote neighbor (IPv4/v6 address).
+   * \param asn The AS number of the remote neighbor.
+   */
+  void BgpAddNeighbor (Ptr<Node> node, std::string neighbor, uint32_t asn);
+
+  /**
+   * \brief Enable the ospf6d daemon (OSPFv3) to the nodes.
+   *
+   * \param nodes The node(s) to enable OSPFv3 (quagga ospf6d).
+   * \param ifname The interface to enable OSPFv3.
+   */
   void EnableOspf6 (NodeContainer nodes, const char *ifname);
+
+  /**
+   * \brief Configure the debug option to the ospf6d daemon (via debug ospf6d xxx).
+   *
+   * \param nodes The node(s) to configure the options.
+   */
   void EnableOspf6Debug (NodeContainer nodes);
 
 private:

@@ -127,7 +127,7 @@ int main (int argc, char *argv[])
       RunIp (nodes.Get (0), Seconds (0.4), "addr list");
 
       QuaggaHelper quagga;
-      quagga.UseManualConfig (nodes);
+      quagga.UseManualZebraConfig (nodes);
       quagga.Install (nodes);  
 
       DceApplicationHelper process;

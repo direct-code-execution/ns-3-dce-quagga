@@ -22,9 +22,7 @@
 #include "quagga-helper.h"
 #include "ns3/names.h"
 #include "ns3/ipv4-l3-protocol.h"
-//#include "ns3/utils.h"
 #include <fstream>
-#include <map>
 #include <sys/stat.h>
 #include "ns3/log.h"
 
@@ -40,14 +38,10 @@ private:
   std::map<std::string, uint32_t> *networks;
 public:
   QuaggaConfig ()
-    : m_tdpenable (false),
-      m_zebradebug (false),
-      m_usemanualconf (false),
-      m_natenable (false),
-      m_tdfixed (false)
+    : m_zebradebug (false),
+      m_usemanualconf (false)
   {
     m_radvd_if = new std::map<std::string, std::string> ();
-    m_egress_if = new std::vector<std::string> ();
     m_haflag_if = new std::vector<std::string> ();
   }
   ~QuaggaConfig ()
@@ -81,13 +75,9 @@ public:
     return m_filename;
   }
 
-  bool m_tdpenable;
   bool m_zebradebug;
   bool m_usemanualconf;
-  bool m_natenable;
-  bool m_tdfixed;
   std::map<std::string, std::string> *m_radvd_if;
-  std::vector<std::string> *m_egress_if;
   std::vector<std::string> *m_haflag_if;
 
   std::string m_filename;
@@ -452,37 +442,6 @@ QuaggaHelper::EnableOspfDebug (NodeContainer nodes)
   return;
 }
 
-void
-QuaggaHelper::EnableTdpNina (NodeContainer nodes)
-{
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
-    {
-      Ptr<QuaggaConfig> zebra_conf = nodes.Get (i)->GetObject<QuaggaConfig>();
-      if (!zebra_conf)
-        {
-          zebra_conf = new QuaggaConfig ();
-          nodes.Get (i)->AggregateObject (zebra_conf);
-        }
-      zebra_conf->m_tdpenable = true;
-    }
-  return;
-}
-
-void
-QuaggaHelper::EnableTdpFixedRouter (NodeContainer nodes)
-{
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
-    {
-      Ptr<QuaggaConfig> zebra_conf = nodes.Get (i)->GetObject<QuaggaConfig>();
-      if (!zebra_conf)
-        {
-          zebra_conf = new QuaggaConfig ();
-          nodes.Get (i)->AggregateObject (zebra_conf);
-        }
-      zebra_conf->m_tdfixed = true;
-    }
-  return;
-}
 
 void
 QuaggaHelper::EnableZebraDebug (NodeContainer nodes)
@@ -516,20 +475,6 @@ QuaggaHelper::EnableRadvd (Ptr<Node> node, const char *ifname, const char *prefi
   return;
 }
 
-void
-QuaggaHelper::EnableEgressIF (Ptr<Node> node, const char *ifname)
-{
-  Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig>();
-  if (!zebra_conf)
-    {
-      zebra_conf = new QuaggaConfig ();
-      node->AggregateObject (zebra_conf);
-    }
-
-  zebra_conf->m_egress_if->push_back (std::string(ifname));
-
-  return;
-}
 
 void
 QuaggaHelper::EnableHomeAgentFlag (Ptr<Node> node, const char *ifname)
@@ -547,7 +492,7 @@ QuaggaHelper::EnableHomeAgentFlag (Ptr<Node> node, const char *ifname)
 }
 
 void
-QuaggaHelper::UseManualConfig (NodeContainer nodes)
+QuaggaHelper::UseManualZebraConfig (NodeContainer nodes)
 {
   for (uint32_t i = 0; i < nodes.GetN (); i ++)
     {
@@ -562,21 +507,6 @@ QuaggaHelper::UseManualConfig (NodeContainer nodes)
   return;
 }
 
-void
-QuaggaHelper::EnableNat (NodeContainer nodes)
-{
-  for (uint32_t i = 0; i < nodes.GetN (); i ++)
-    {
-      Ptr<QuaggaConfig> zebra_conf = nodes.Get (i)->GetObject<QuaggaConfig>();
-      if (!zebra_conf)
-        {
-          zebra_conf = new QuaggaConfig ();
-          nodes.Get (i)->AggregateObject (zebra_conf);
-        }
-      zebra_conf->m_natenable = true;
-    }
-  return;
-}
 
 // BGP
 void
@@ -608,7 +538,7 @@ QuaggaHelper::GetAsn (Ptr<Node> node)
 }
 
 void
-QuaggaHelper::BgpAddNeighbor (Ptr<Node> node, std::string n, uint32_t asn)
+QuaggaHelper::BgpAddNeighbor (Ptr<Node> node, std::string neighbor, uint32_t asn)
 {
   Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig>();
   if (!bgp_conf)
@@ -617,7 +547,7 @@ QuaggaHelper::BgpAddNeighbor (Ptr<Node> node, std::string n, uint32_t asn)
       bgp_conf->SetAsn (node->GetId ());
       node->AggregateObject (bgp_conf);
     }
-  bgp_conf->AddNeighbor (n, asn);
+  bgp_conf->AddNeighbor (neighbor, asn);
   return;
 }
 
@@ -706,11 +636,10 @@ QuaggaHelper::GenerateConfigZebra (Ptr<Node> node)
   conf << *zebra_conf;
   if (zebra_conf->m_zebradebug)
     {
-      //      conf << "debug zebra tree" << std::endl;
-//      conf << "debug zebra kernel" << std::endl;
- //     conf << "debug zebra events" << std::endl;
+      conf << "debug zebra kernel" << std::endl;
+      conf << "debug zebra events" << std::endl;
+      conf << "debug zebra packet" << std::endl;
       //      conf << "debug zebra route" << std::endl;
-      //      conf << "debug zebra packet" << std::endl;
     }
 
   // radvd
@@ -736,85 +665,7 @@ QuaggaHelper::GenerateConfigZebra (Ptr<Node> node)
       conf << "!" << std::endl;
     }
 
-  // egress IF
-  for (std::vector<std::string>::iterator i = zebra_conf->m_egress_if->begin (); 
-       i != zebra_conf->m_egress_if->end (); ++i)
-    {
-      conf << "interface " << (*i) << std::endl;
-      conf << " ipv6 nd td egress" << std::endl;
-      conf << " ipv6 nd td ingress" << std::endl;
-      conf << "!" << std::endl;
-    }
-
-  for (std::vector<uint32_t>::iterator i = zebra_conf->iflist.begin ();
-       i != zebra_conf->iflist.end ();
-       i++)
-    {
-      conf << "interface eth" << *i << std::endl;
-    }
-
-  if (zebra_conf->m_tdpenable)
-    {
-      conf << "ipv6 nd nina enable" << std::endl;
-    }
-  if (zebra_conf->m_tdfixed)
-    {
-      conf << "ipv6 nd td fixed" << std::endl;
-    }
-  if (zebra_conf->m_natenable)
-    {
-      conf << "ipv6 nat enable" << std::endl;
-    }
-
-#if 0
-  if (zebra_conf->m_tdpenable)
-    {
-      conf << "interface sim0" << std::endl;
-      conf << " ipv6 nd ra-interval 5" << std::endl;
-      conf << " ipv6 nd prefix-advertisement" << std::endl;
-      conf << " no ipv6 nd suppress-ra" << std::endl;
-      conf << " ipv6 nd home-agent-config-flag" << std::endl;
-      conf << "!" << std::endl;
-
-      conf << "interface sim1" << std::endl;
-      //      conf << " ipv6 nd td ingress" << std::endl;
-      conf << " ipv6 nd ra-interval 5" << std::endl;
-      conf << " ipv6 nd prefix-advertisement" << std::endl;
-      conf << " no ipv6 nd suppress-ra" << std::endl;
-      conf << " ipv6 nd home-agent-config-flag" << std::endl;
-      conf << "!" << std::endl;
-
-      conf << "interface sim2" << std::endl;
-      //      conf << " ipv6 nd td ingress" << std::endl;
-      conf << " ipv6 nd ra-interval 5" << std::endl;
-      conf << " ipv6 nd prefix-advertisement" << std::endl;
-      conf << " no ipv6 nd suppress-ra" << std::endl;
-      conf << " ipv6 nd home-agent-config-flag" << std::endl;
-      conf << "!" << std::endl;
-
-      conf << "interface sim3" << std::endl;
-      conf << " ipv6 nd ra-interval 5" << std::endl;
-      conf << " ipv6 nd prefix-advertisement" << std::endl;
-      conf << " no ipv6 nd suppress-ra" << std::endl;
-      conf << " ipv6 nd home-agent-config-flag" << std::endl;
-      conf << "!" << std::endl;
-
-      conf << "interface sim4" << std::endl;
-      conf << " ipv6 nd ra-interval 5" << std::endl;
-      conf << " ipv6 nd prefix-advertisement" << std::endl;
-      conf << " no ipv6 nd suppress-ra" << std::endl;
-      conf << "!" << std::endl;
-
-      conf << "interface sim5" << std::endl;
-      conf << " ipv6 nd ra-interval 5" << std::endl;
-      conf << " ipv6 nd prefix-advertisement" << std::endl;
-      conf << " no ipv6 nd suppress-ra" << std::endl;
-      conf << "!" << std::endl;
-    }
-#endif
-
   conf.close ();
-
 }
 
 void
