@@ -111,11 +111,11 @@ def build_dce_tests(module, kern):
     else:
         module.add_runner_test(needed=['core', 'dce', 'internet'], source=['test/dce-manager-test.cc','test/without-kernel.cc'])
     	    
-    module.add_test(features='cxx cxxshlib', source=['test/test-macros.cc'], 
-                    target='lib/test', linkflags=['-Wl,-soname=libtest.so'])
+#    module.add_test(features='cxx cxxshlib', source=['test/test-macros.cc'], 
+#                    target='lib/test', linkflags=['-Wl,-soname=libtest.so'])
 
-#    tests = [['test-empty', []],
-#             ]
+    tests = [
+            ]
 
     for name,uselib in tests:
         module.add_test(**dce_kw(target='bin/' + name, source = ['test/' + name + '.cc'],
@@ -188,6 +188,8 @@ def build(bld):
                                   includes=kernel_includes,
                                   lib=['dl', 'python2.6'])
 #                                  lib=['dl','efence'])
+
+    build_dce_tests(module, bld.env['KERNEL_STACK'])
     build_dce_examples(module)
 
     if bld.env['KERNEL_STACK']:
