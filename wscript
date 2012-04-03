@@ -143,6 +143,14 @@ def build_dce_kernel_examples(module):
                        source=['example/dce-quagga-radvd.cc'])
 
     module.add_example(needed = ['core', 'internet', 'dce-quagga', 'point-to-point'],
+                       target='bin/dce-quagga-ripd',
+                       source=['example/dce-quagga-ripd.cc'])
+
+    module.add_example(needed = ['core', 'internet', 'dce-quagga', 'point-to-point'],
+                       target='bin/dce-quagga-ripngd',
+                       source=['example/dce-quagga-ripngd.cc'])
+
+    module.add_example(needed = ['core', 'internet', 'dce-quagga', 'point-to-point'],
                        target='bin/dce-quagga-ospfd',
                        source=['example/dce-quagga-ospfd.cc'])
 

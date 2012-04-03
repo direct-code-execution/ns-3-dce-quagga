@@ -398,6 +398,167 @@ public:
   }
 };
 
+class RipConfig : public Object
+{
+private:
+public:
+  std::vector<std::string> *m_enable_if;
+  bool m_ripdebug;
+  std::string m_filename;
+
+  RipConfig ()
+  {
+    m_enable_if = new std::vector<std::string> ();
+    m_ripdebug = false;
+  }
+  ~RipConfig ()
+  {
+    delete m_enable_if;
+  }
+  static TypeId
+  GetTypeId (void)
+  {
+    static TypeId tid = TypeId ("ns3::RipConfig")
+      .SetParent<Object> ()
+      .AddConstructor<RipConfig> ()
+    ;
+    return tid;
+  }
+  TypeId
+  GetInstanceTypeId (void) const
+  {
+    return GetTypeId ();
+  }
+
+
+  void
+  SetFilename (const std::string &filename)
+  {
+    m_filename = filename;
+  }
+
+  std::string
+  GetFilename () const
+  {
+    return m_filename;
+  }
+
+  virtual void
+  Print (std::ostream& os) const
+  {
+    os << "hostname ripd" << std::endl
+       << "password zebra" << std::endl
+       << "log stdout" << std::endl
+       << "service advanced-vty" << std::endl;
+
+    if (m_ripdebug)
+      {
+        os << "debug rip events " << std::endl;
+        os << "debug rip packet send detail " << std::endl;
+        os << "debug rip packet recv detail " << std::endl;
+        os << "debug rip zebra " << std::endl;
+      }
+
+    for (std::vector<std::string>::iterator i = m_enable_if->begin ();
+         i != m_enable_if->end (); ++i)
+      {
+        if (i == m_enable_if->begin ())
+          {
+            os << "router rip" << std::endl;
+          }
+
+        os << " network " << (*i) << std::endl;
+        os << " redistribute connected" << std::endl;
+
+        if (i == m_enable_if->begin ())
+          {
+            os << "!" << std::endl;
+          }
+      }
+  }
+};
+
+class RipngConfig : public Object
+{
+private:
+public:
+  std::vector<std::string> *m_enable_if;
+  bool m_ripngdebug;
+  std::string m_filename;
+
+  RipngConfig ()
+  {
+    m_enable_if = new std::vector<std::string> ();
+    m_ripngdebug = false;
+  }
+  ~RipngConfig ()
+  {
+    delete m_enable_if;
+  }
+  static TypeId
+  GetTypeId (void)
+  {
+    static TypeId tid = TypeId ("ns3::RipngConfig")
+      .SetParent<Object> ()
+      .AddConstructor<RipngConfig> ()
+    ;
+    return tid;
+  }
+  TypeId
+  GetInstanceTypeId (void) const
+  {
+    return GetTypeId ();
+  }
+
+
+  void
+  SetFilename (const std::string &filename)
+  {
+    m_filename = filename;
+  }
+
+  std::string
+  GetFilename () const
+  {
+    return m_filename;
+  }
+
+  virtual void
+  Print (std::ostream& os) const
+  {
+    os << "hostname ripngd" << std::endl
+       << "password zebra" << std::endl
+       << "log stdout" << std::endl
+       << "service advanced-vty" << std::endl;
+
+    if (m_ripngdebug)
+      {
+        os << "debug ripng events " << std::endl;
+        os << "debug ripng packet send detail " << std::endl;
+        os << "debug ripng packet recv detail " << std::endl;
+        os << "debug ripng zebra " << std::endl;
+      }
+
+    for (std::vector<std::string>::iterator i = m_enable_if->begin ();
+         i != m_enable_if->end (); ++i)
+      {
+        if (i == m_enable_if->begin ())
+          {
+            os << "router ripng" << std::endl;
+          }
+
+        os << " network " << (*i) << std::endl;
+        os << " redistribute connected" << std::endl;
+        os << " route 2001:db8:500:0::/64" << std::endl;
+
+        if (i == m_enable_if->begin ())
+          {
+            os << "!" << std::endl;
+          }
+      }
+  }
+};
+
 QuaggaHelper::QuaggaHelper ()
 {
 }
@@ -419,9 +580,7 @@ QuaggaHelper::EnableOspf (NodeContainer nodes)
           ospf_conf = new OspfConfig ();
           nodes.Get (i)->AggregateObject (ospf_conf);
         }
-
     }
-
   return;
 }
 
@@ -586,29 +745,80 @@ QuaggaHelper::EnableOspf6Debug (NodeContainer nodes)
   return;
 }
 
+// RIP
+void
+QuaggaHelper::EnableRip (NodeContainer nodes, const char *ifname)
+{
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
+    {
+      Ptr<RipConfig> rip_conf = nodes.Get (i)->GetObject<RipConfig> ();
+      if (!rip_conf)
+        {
+          rip_conf = new RipConfig ();
+          nodes.Get (i)->AggregateObject (rip_conf);
+        }
+
+      rip_conf->m_enable_if->push_back (std::string (ifname));
+    }
+
+  return;
+}
+
+void
+QuaggaHelper::EnableRipDebug (NodeContainer nodes)
+{
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
+    {
+      Ptr<RipConfig> rip_conf = nodes.Get (i)->GetObject<RipConfig> ();
+      if (!rip_conf)
+        {
+          rip_conf = new RipConfig ();
+          nodes.Get (i)->AggregateObject (rip_conf);
+        }
+      rip_conf->m_ripdebug = true;
+    }
+  return;
+}
+
+// RIPNG
+void
+QuaggaHelper::EnableRipng (NodeContainer nodes, const char *ifname)
+{
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
+    {
+      Ptr<RipngConfig> ripng_conf = nodes.Get (i)->GetObject<RipngConfig> ();
+      if (!ripng_conf)
+        {
+          ripng_conf = new RipngConfig ();
+          nodes.Get (i)->AggregateObject (ripng_conf);
+        }
+
+      ripng_conf->m_enable_if->push_back (std::string (ifname));
+    }
+
+  return;
+}
+
+void
+QuaggaHelper::EnableRipngDebug (NodeContainer nodes)
+{
+  for (uint32_t i = 0; i < nodes.GetN (); i++)
+    {
+      Ptr<RipngConfig> ripng_conf = nodes.Get (i)->GetObject<RipngConfig> ();
+      if (!ripng_conf)
+        {
+          ripng_conf = new RipngConfig ();
+          nodes.Get (i)->AggregateObject (ripng_conf);
+        }
+      ripng_conf->m_ripngdebug = true;
+    }
+  return;
+}
+
 void
 QuaggaHelper::GenerateConfigZebra (Ptr<Node> node)
 {
   Ptr<QuaggaConfig> zebra_conf = node->GetObject<QuaggaConfig> ();
-  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-
-  NS_LOG_DEBUG ("ipv4->GetNInterfaces () = " << ipv4->GetNInterfaces ());
-
-//   for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i ++)
-//     {
-//       Ipv4Address addr = ipv4->GetAddress (i, 0).GetLocal ();
-//       Ipv4Mask mask = ipv4->GetAddress (i, 0).GetMask ();
-//       Ipv4Address prefix = addr.CombineMask (mask);
-//
-//       NS_LOG_DEBUG ("address: " << addr);
-//
-//       if (addr.IsEqual (Ipv4Address::GetLoopback()))
-//         {
-//           continue;
-//         }
-//
-//       zebra_conf->iflist.push_back (i);
-//     }
 
   // config generation
   std::stringstream conf_dir, conf_file;
@@ -770,6 +980,62 @@ QuaggaHelper::GenerateConfigOspf6 (Ptr<Node> node)
   conf.close ();
 }
 
+void
+QuaggaHelper::GenerateConfigRip (Ptr<Node> node)
+{
+  NS_LOG_FUNCTION (node);
+
+  Ptr<RipConfig> rip_conf = node->GetObject<RipConfig> ();
+
+  // config generation
+  std::stringstream conf_dir, conf_file;
+  // FIXME XXX
+  conf_dir << "files-" << node->GetId () << "";
+  ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
+  conf_dir << "/usr/";
+  ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
+  conf_dir << "/local/";
+  ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
+  conf_dir << "/etc/";
+  ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
+
+  conf_file << conf_dir.str () << "/ripd.conf";
+  rip_conf->SetFilename ("/usr/local/etc/ripd.conf");
+
+  std::ofstream conf;
+  conf.open (conf_file.str ().c_str ());
+  rip_conf->Print (conf);
+  conf.close ();
+}
+
+void
+QuaggaHelper::GenerateConfigRipng (Ptr<Node> node)
+{
+  NS_LOG_FUNCTION (node);
+
+  Ptr<RipngConfig> ripng_conf = node->GetObject<RipngConfig> ();
+
+  // config generation
+  std::stringstream conf_dir, conf_file;
+  // FIXME XXX
+  conf_dir << "files-" << node->GetId () << "";
+  ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
+  conf_dir << "/usr/";
+  ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
+  conf_dir << "/local/";
+  ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
+  conf_dir << "/etc/";
+  ::mkdir (conf_dir.str ().c_str (), S_IRWXU | S_IRWXG);
+
+  conf_file << conf_dir.str () << "/ripngd.conf";
+  ripng_conf->SetFilename ("/usr/local/etc/ripngd.conf");
+
+  std::ofstream conf;
+  conf.open (conf_file.str ().c_str ());
+  ripng_conf->Print (conf);
+  conf.close ();
+}
+
 ApplicationContainer
 QuaggaHelper::Install (Ptr<Node> node)
 {
@@ -855,6 +1121,34 @@ QuaggaHelper::InstallPriv (Ptr<Node> node)
       process.SetBinary ("ospf6d");
       process.AddArguments ("-f", ospf6_conf->GetFilename ());
       process.AddArguments ("-i", "/usr/local/etc/ospf6d.pid");
+      apps = process.Install (node);
+      apps.Get (0)->SetStartTime (Seconds (5.0 + 0.5 * node->GetId ()));
+      node->AddApplication (apps.Get (0));
+    }
+
+  Ptr<RipConfig> rip_conf = node->GetObject<RipConfig> ();
+  // RIP
+  if (rip_conf)
+    {
+      GenerateConfigRip (node);
+      process.ResetArguments ();
+      process.SetBinary ("ripd");
+      process.AddArguments ("-f", rip_conf->GetFilename ());
+      process.AddArguments ("-i", "/usr/local/etc/ripd.pid");
+      apps = process.Install (node);
+      apps.Get (0)->SetStartTime (Seconds (5.0 + 0.5 * node->GetId ()));
+      node->AddApplication (apps.Get (0));
+    }
+
+  Ptr<RipngConfig> ripng_conf = node->GetObject<RipngConfig> ();
+  // RIPNG
+  if (ripng_conf)
+    {
+      GenerateConfigRipng (node);
+      process.ResetArguments ();
+      process.SetBinary ("ripngd");
+      process.AddArguments ("-f", ripng_conf->GetFilename ());
+      process.AddArguments ("-i", "/usr/local/etc/ripngd.pid");
       apps = process.Install (node);
       apps.Get (0)->SetStartTime (Seconds (5.0 + 0.5 * node->GetId ()));
       node->AddApplication (apps.Get (0));

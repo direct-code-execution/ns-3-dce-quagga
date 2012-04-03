@@ -167,6 +167,36 @@ public:
    */
   void EnableOspf6Debug (NodeContainer nodes);
 
+  /**
+   * \brief Enable the ripd daemon (RIP v1/v2, RFC2453) to the nodes.
+   *
+   * \param nodes The node(s) to enable RIP (quagga ripd).
+   * \param ifname The interface to enable RIP.
+   */
+  void EnableRip (NodeContainer nodes, const char *ifname);
+
+  /**
+   * \brief Configure the debug option to the ripd daemon (via debug rip xxx).
+   *
+   * \param nodes The node(s) to configure the options.
+   */
+  void EnableRipDebug (NodeContainer nodes);
+
+  /**
+   * \brief Enable the ripngd daemon (RIPng, RFC2080) to the nodes.
+   *
+   * \param nodes The node(s) to enable RIPng (quagga ripngd).
+   * \param ifname The interface to enable RIPng.
+   */
+  void EnableRipng (NodeContainer nodes, const char *ifname);
+
+  /**
+   * \brief Configure the debug option to the ripngd daemon (via debug ripng xxx).
+   *
+   * \param nodes The node(s) to configure the options.
+   */
+  void EnableRipngDebug (NodeContainer nodes);
+
 private:
   /**
    * \internal
@@ -176,6 +206,8 @@ private:
   void GenerateConfigOspf (Ptr<Node> node);
   void GenerateConfigBgp (Ptr<Node> node);
   void GenerateConfigOspf6 (Ptr<Node> node);
+  void GenerateConfigRip (Ptr<Node> node);
+  void GenerateConfigRipng (Ptr<Node> node);
 };
 
 } // namespace ns3
