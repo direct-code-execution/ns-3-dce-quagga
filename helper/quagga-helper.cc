@@ -549,7 +549,6 @@ public:
 
         os << " network " << (*i) << std::endl;
         os << " redistribute connected" << std::endl;
-        os << " route 2001:db8:500:0::/64" << std::endl;
 
         if (i == m_enable_if->begin ())
           {

@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("DceQuaggaBgpd");
 // Parameters
 uint32_t nNodes = 2;
 uint32_t stopTime = 6000;
-std::string netStack = "ns3";
+std::string netStack = "linux";
 
 
 static void RunIp (Ptr<Node> node, Time at, std::string str)

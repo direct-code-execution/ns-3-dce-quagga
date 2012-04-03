@@ -106,20 +106,8 @@ def dce_kw(**kw):
     return d
 
 def build_dce_tests(module, kern):
-    if kern:
-        module.add_runner_test(needed=['core', 'dce', 'internet'],  source=['test/dce-manager-test.cc', 'test/with-kernel.cc'])
-    else:
-        module.add_runner_test(needed=['core', 'dce', 'internet'], source=['test/dce-manager-test.cc','test/without-kernel.cc'])
-    	    
-#    module.add_test(features='cxx cxxshlib', source=['test/test-macros.cc'], 
-#                    target='lib/test', linkflags=['-Wl,-soname=libtest.so'])
-
-    tests = [
-            ]
-
-    for name,uselib in tests:
-        module.add_test(**dce_kw(target='bin/' + name, source = ['test/' + name + '.cc'],
-                                 use = uselib + ['lib/test']))
+    module.add_runner_test(needed=['core', 'dce-quagga', 'internet', 'csma'],
+                           source=['test/dce-quagga-test.cc'])
 
 def build_dce_examples(module):
     dce_examples = [
