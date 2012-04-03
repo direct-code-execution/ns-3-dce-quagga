@@ -213,7 +213,7 @@ main (int argc, char *argv[])
       {
         //     std::cout << "[" << systemId << "] start quagga Node " << i << std::endl;
         processManager.Install (nodes.Get (i));
-        quagga.EnableOspf (nodes.Get (i));
+        quagga.EnableOspf (nodes.Get (i), "10.0.0.0/8"); // FIXME
         quagga.EnableOspfDebug (nodes.Get (i));
         quagga.Install (nodes.Get (i));
       }

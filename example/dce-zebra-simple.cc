@@ -88,7 +88,7 @@ int main (int argc, char *argv[])
         {
           Ptr<Node> node = grid.GetNode (i,j);
           dceManager->Install (node);
-          quagga.EnableOspf (node);
+          quagga.EnableOspf (node, "10.0.0.0/8"); // FIXME
           quagga.EnableOspfDebug (node);
           quagga.EnableZebraDebug (node);
           apps.Add (quagga.Install (node));

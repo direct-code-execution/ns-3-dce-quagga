@@ -133,11 +133,9 @@ public:
   }
 
   void
-  addNetwork (Ipv4Address prefix, uint32_t plen, uint32_t area)
+  addNetwork (std::string prefix, uint32_t area)
   {
-    std::stringstream net;
-    net << prefix << "/" << plen;
-    networks->insert (std::map<std::string, uint32_t>::value_type (net.str (), area));
+    networks->insert (std::map<std::string, uint32_t>::value_type (prefix, area));
   }
 
   void
@@ -569,7 +567,7 @@ QuaggaHelper::SetAttribute (std::string name, const AttributeValue &value)
 
 // OSPF
 void
-QuaggaHelper::EnableOspf (NodeContainer nodes)
+QuaggaHelper::EnableOspf (NodeContainer nodes, const char *network)
 {
   for (uint32_t i = 0; i < nodes.GetN (); i++)
     {
@@ -579,6 +577,8 @@ QuaggaHelper::EnableOspf (NodeContainer nodes)
           ospf_conf = new OspfConfig ();
           nodes.Get (i)->AggregateObject (ospf_conf);
         }
+
+      ospf_conf->addNetwork (std::string (network), 0);
     }
   return;
 }
@@ -882,28 +882,7 @@ QuaggaHelper::GenerateConfigOspf (Ptr<Node> node)
   NS_LOG_FUNCTION (node);
 
   Ptr<OspfConfig> ospf_conf = node->GetObject<OspfConfig> ();
-  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-
   ospf_conf->m_routerId = 1 + node->GetId ();
-
-  NS_LOG_DEBUG ("ipv4->GetNInterfaces () = " << ipv4->GetNInterfaces ());
-
-  for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++)
-    {
-      Ipv4Address addr = ipv4->GetAddress (i, 0).GetLocal ();
-      Ipv4Mask mask = ipv4->GetAddress (i, 0).GetMask ();
-      Ipv4Address prefix = addr.CombineMask (mask);
-
-      NS_LOG_DEBUG ("address: " << addr);
-
-      if (addr.IsEqual (Ipv4Address::GetLoopback ()))
-        {
-          continue;
-        }
-
-      ospf_conf->iflist->push_back (i);
-      ospf_conf->addNetwork (prefix, mask.GetPrefixLength (), 0);
-    }
 
   // config generation
   std::stringstream conf_dir, conf_file;

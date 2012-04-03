@@ -84,8 +84,9 @@ public:
    * \brief Enable the ospfd daemon to the nodes.
    *
    * \param nodes The node(s) to enable OSPFv2 (quagga ospfd).
+   * \param network The network to enable ospf protocol.
    */
-  void EnableOspf (NodeContainer nodes);
+  void EnableOspf (NodeContainer nodes, const char *network);
 
   /**
    * \brief Configure the debug option to the ospfd daemon (via debug ospf xxx).

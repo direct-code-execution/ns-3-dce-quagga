@@ -100,7 +100,7 @@ int main (int argc, char *argv[])
       processManager.Install (nodes);
 
       QuaggaHelper quagga;
-      quagga.EnableOspf (nodes);
+      quagga.EnableOspf (nodes, "10.0.0.0/24");
       quagga.EnableOspfDebug (nodes);
       quagga.EnableZebraDebug (nodes);
       quagga.Install (nodes);
@@ -127,22 +127,10 @@ int main (int argc, char *argv[])
       RunIp (nodes.Get (0), Seconds (0.4), "addr list");
 
       QuaggaHelper quagga;
-      quagga.UseManualZebraConfig (nodes);
+      quagga.EnableOspf (nodes, "10.0.0.0/24");
+      quagga.EnableOspfDebug (nodes);
+      quagga.EnableZebraDebug (nodes);
       quagga.Install (nodes);
-
-      DceApplicationHelper process;
-      ApplicationContainer apps;
-
-      //      GenerateConfigOspf (node);
-      process.ResetArguments ();
-      process.SetStackSize (1 << 16);
-      process.SetBinary ("ospfd");
-      process.ParseArguments ("-f /usr/local/etc/ospfd.conf");
-      apps = process.Install (nodes);
-      for (uint32_t i = 0; i < nodes.GetN (); i++)
-        {
-          apps.Get (i)->SetStartTime (Seconds (2.0 + 1 * i));
-        }
     }
 
   pointToPoint.EnablePcapAll ("dce-quagga-ospfd");
