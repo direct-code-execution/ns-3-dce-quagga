@@ -182,7 +182,7 @@ def build(bld):
                                   headers=module_headers,
                                   use=uselib,
                                   includes=kernel_includes,
-                                  lib=['dl', 'python2.6'])
+                                  lib=['dl'])
 #                                  lib=['dl','efence'])
 
     build_dce_tests(module, bld.env['KERNEL_STACK'])
