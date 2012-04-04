@@ -361,12 +361,12 @@ DceQuaggaTestCase::DoRun (void)
 
   if (m_debug)
     {
-      ::system (("/bin/mv -f /home/tazaki/hgworks/ns-3-dce-thehajime/ns-3-dce-quagga/files-0 /home/tazaki/hgworks/ns-3-dce-thehajime/ns-3-dce-quagga/files-0-" + m_testname + "-" + (m_useKernel ? "kernel" : "ns3")).c_str ());
-      ::system (("/bin/mv -f /home/tazaki/hgworks/ns-3-dce-thehajime/ns-3-dce-quagga/files-1 /home/tazaki/hgworks/ns-3-dce-thehajime/ns-3-dce-quagga/files-1-" + m_testname + "-" + (m_useKernel ? "kernel" : "ns3")).c_str ());
+      ::system (("/bin/mv -f files-0 files-0-" + m_testname + "-" + (m_useKernel ? "kernel" : "ns3")).c_str ());
+      ::system (("/bin/mv -f files-1 files-1-" + m_testname + "-" + (m_useKernel ? "kernel" : "ns3")).c_str ());
     }
   else
     {
-      ::system ("/bin/rm -rf /home/tazaki/hgworks/ns-3-dce-thehajime/ns-3-dce-quagga/files-*");
+      ::system ("/bin/rm -rf files-*");
     }
 }
 
@@ -412,7 +412,7 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
     { "bgpd", 120, true},
   };
 
-  ::system ("/bin/rm -rf /home/tazaki/hgworks/ns-3-dce-thehajime/ns-3-dce-quagga/files-*");
+  ::system ("/bin/rm -rf files-*");
   for (unsigned int i = 0; i < sizeof(tests) / sizeof(testPair); i++)
     {
       AddTestCase (new DceQuaggaTestCase (tests[i].name,
