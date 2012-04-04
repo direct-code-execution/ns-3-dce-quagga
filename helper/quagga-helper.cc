@@ -25,6 +25,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include "ns3/log.h"
+#include <arpa/inet.h>
 
 NS_LOG_COMPONENT_DEFINE ("QuaggaHelper");
 
@@ -245,7 +246,7 @@ public:
   void AddNeighbor (std::string n, uint32_t asn)
   {
     neighbors->push_back (n);
-    neighbor_asn->insert ( std::map<std::string, uint32_t>::value_type ( n, asn ));
+    neighbor_asn->insert (std::map<std::string, uint32_t>::value_type (n, asn));
   }
   void addNetwork (std::string n)
   {
@@ -280,27 +281,57 @@ public:
        << "debug bgp updates" << std::endl
        << "router bgp " << asn << std::endl
        << "  bgp router-id " << router_id << std::endl;
-    for ( std::vector<std::string>::iterator it = neighbors->begin (); it != neighbors->end (); it++ )
+    for (std::vector<std::string>::iterator it = neighbors->begin (); it != neighbors->end (); it++)
       {
         os << "  neighbor " << *it << " remote-as " << (*neighbor_asn)[*it] << std::endl;
         os << "  neighbor " << *it << " advertisement-interval 5"  << std::endl;
       }
     os << "  redistribute connected" << std::endl;
-    os << "  redistribute kernel" << std::endl;
+    // IPv4
     os << "  address-family ipv4 unicast" << std::endl;
-    for ( std::vector<std::string>::iterator it = neighbors->begin (); it != neighbors->end (); it++ )
+    for (std::vector<std::string>::iterator it = neighbors->begin (); it != neighbors->end (); it++)
       {
+        struct in_addr addr;
+        int ret = ::inet_pton (AF_INET, ((*it).c_str ()), &addr);
+        if (!ret)
+          {
+            continue;
+          }
         os << "   neighbor " << *it << " activate" << std::endl;
         os << "   neighbor " << *it << " next-hop-self" << std::endl;
-        if ( isDefaultOriginate == true )
+        if (isDefaultOriginate == true)
           {
             os << "   neighbor " << *it << " default-originate" << std::endl;
           }
       }
-    for ( std::vector<std::string>::iterator it = networks->begin (); it != networks->end (); it++ )
+    for (std::vector<std::string>::iterator it = networks->begin (); it != networks->end (); it++)
       {
         os << "   network " << *it << std::endl;
       }
+    os << "  exit-address-family" << std::endl;
+
+    // IPv6
+    os << "  address-family ipv6 unicast" << std::endl;
+    for (std::vector<std::string>::iterator it = neighbors->begin (); it != neighbors->end (); it++)
+      {
+        struct in6_addr addr;
+        int ret = ::inet_pton (AF_INET6, ((*it).c_str ()), &addr);
+        if (!ret)
+          {
+            continue;
+          }
+        os << "   neighbor " << *it << " activate" << std::endl;
+        os << "   neighbor " << *it << " next-hop-self" << std::endl;
+        if (isDefaultOriginate == true)
+          {
+            os << "   neighbor " << *it << " default-originate" << std::endl;
+          }
+      }
+    for (std::vector<std::string>::iterator it = networks->begin (); it != networks->end (); it++)
+      {
+        os << "   network " << *it << std::endl;
+      }
+    os << "   redistribute connected" << std::endl;
     os << "  exit-address-family" << std::endl;
     os << "!" << std::endl;
   }

@@ -261,6 +261,12 @@ DceQuaggaTestCase::DoRun (void)
       quagga.BgpAddNeighbor (nodes.Get (0), "10.0.0.2", quagga.GetAsn (nodes.Get (1)));
       quagga.BgpAddNeighbor (nodes.Get (1), "10.0.0.1", quagga.GetAsn (nodes.Get (0)));
     }
+  else if (m_testname == "bgpd_v6")
+    {
+      quagga.EnableBgp (nodes);
+      quagga.BgpAddNeighbor (nodes.Get (0), "2001:db8:0:1::2", quagga.GetAsn (nodes.Get (1)));
+      quagga.BgpAddNeighbor (nodes.Get (1), "2001:db8:0:1::1", quagga.GetAsn (nodes.Get (0)));
+    }
   else if (m_testname == "radvd")
     {
       if (m_debug)
@@ -410,6 +416,10 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
     { "ospf6d", 120, true},
     { "bgpd", 120, false},
     { "bgpd", 120, true},
+#ifdef FIXME
+    { "bgpd_v6", 120, false},
+#endif
+    { "bgpd_v6", 120, true},
   };
 
   ::system ("/bin/rm -rf files-*");
