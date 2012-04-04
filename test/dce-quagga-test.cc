@@ -126,7 +126,8 @@ DceQuaggaTestCase::CsmaRxCallback (std::string context, Ptr<const Packet> origin
 }
 
 DceQuaggaTestCase::DceQuaggaTestCase (std::string testname, Time maxDuration, bool useK)
-  : TestCase ("Check that process \"" + testname + "\" completes correctly."),
+  : TestCase ("Check that process \"" + testname
+              + (useK ? "-kernel" : "-ns3") + "\" completes correctly."),
     m_testname (testname),
     m_maxDuration (maxDuration),
     m_useKernel (useK),
@@ -361,12 +362,12 @@ DceQuaggaTestCase::DoRun (void)
   //
   NS_TEST_ASSERT_MSG_EQ (m_pingStatus, true, "Quagga test " << m_testname  << " with " <<
                          (m_useKernel ? "kernel" : "ns3") << " did not return successfully: " << g_testError);
-  OUTPUT ("Quagga test " << m_testname << " with " <<
-          (m_useKernel ? "kernel" : "ns3")
-                         << " stack done. status = " << m_pingStatus);
-
   if (m_debug)
     {
+      OUTPUT ("Quagga test " << m_testname << " with " <<
+              (m_useKernel ? "kernel" : "ns3")
+              << " stack done. status = " << m_pingStatus);
+
       ::system (("/bin/mv -f files-0 files-0-" + m_testname + "-" + (m_useKernel ? "kernel" : "ns3")).c_str ());
       ::system (("/bin/mv -f files-1 files-1-" + m_testname + "-" + (m_useKernel ? "kernel" : "ns3")).c_str ());
     }
@@ -425,7 +426,7 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
   ::system ("/bin/rm -rf files-*");
   for (unsigned int i = 0; i < sizeof(tests) / sizeof(testPair); i++)
     {
-      AddTestCase (new DceQuaggaTestCase (tests[i].name,
+      AddTestCase (new DceQuaggaTestCase (std::string (tests[i].name),
                                           Seconds (tests[i].duration), tests[i].useKernel));
     }
 }
