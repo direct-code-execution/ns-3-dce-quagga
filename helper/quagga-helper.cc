@@ -178,6 +178,7 @@ public:
       {
         os << "  network " << (*i).first << " area " << (*i).second << std::endl;
       }
+    os << " redistribute connected" << std::endl;
     os << "!" << std::endl;
   }
   std::vector<uint32_t> *iflist;

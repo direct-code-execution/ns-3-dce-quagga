@@ -102,7 +102,7 @@ int main (int argc, char *argv[])
       processManager.Install (nodes);
 
       QuaggaHelper quagga;
-      quagga.EnableRadvd (nodes.Get (0), "ns3-device1", "2001:db8:0:1::/64");
+      quagga.EnableRadvd (nodes.Get (0), "ns3-device0", "2001:db8:0:1::/64");
       quagga.EnableZebraDebug (nodes);
       quagga.Install (nodes);
     }
@@ -128,6 +128,7 @@ int main (int argc, char *argv[])
 
       QuaggaHelper quagga;
       quagga.EnableRadvd (nodes.Get (0), "sim0", "2001:db8:0:1::/64");
+      quagga.EnableZebraDebug (nodes);
       quagga.Install (nodes);
     }
 
