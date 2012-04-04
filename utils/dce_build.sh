@@ -36,14 +36,39 @@ make CFLAGS="-fPIC -g" LDFLAGS=-pie
 /bin/cp -f ping6 ../build/bin/
 cd ..
 
+# build elf-loader
+hg clone http://code.nsnam.org/mathieu/elf-loader/
+cd elf-loader
+sed "s/'\/usr\/lib\/debug\/lib\/ld-2.10.1.so'/'\/usr\/lib\/debug\/lib\/ld-2.10.1.so',\n'\/usr\/lib\/debug\/lib\/ld-2.11.1.so'/" extract-system-config.py >a
+mv a extract-system-config.py
+chmod +x extract-system-config.py
+ARCH=`uname -m`/ make clean
+ARCH=`uname -m`/ make vdl-config.h
+ARCH=`uname -m`/ make
+cp ldso ../build/lib
+cp libvdl.so ../build/lib
+cd ..
+
+# mod ns-3-dce (FIXME)
+cd ns-3-dce
+grep -v dce-zebra wscript > a
+mv a wscript
+grep -v point-layout wscript > a
+mv a wscript
+grep -v quagga-helper wscript > a
+mv a wscript
+./waf
+./waf install
+cd ..
+
 # build ns-3-dce-quagga
 cd ns-3-dce-quagga
 cd ../
 BASE=$PWD
 LD_LIBRARY_PATH="$BASE/ns-3-dce-quagga/build/lib:$BASE/build/lib:$BASE/ns-3-dce/build/lib:$BASE/build/bin:$BASE/ns-3-dce/build/bin:."
 PKG_CONFIG_PATH="$BASE/build/lib/pkgconfig"
-PATH="$BASE/build/bin:$BASE/build/sbin:$PATH"
-DCE_PATH="$BASE/ns-3-dce/build/bin_dce"
+PATH="$BASE/build/bin:$BASE/build/sbin:$BASE/ns-3-dce/build/bin_dce:$PATH"
+DCE_PATH=$PATH
 PYTHONPATH=$BASE/ns-3-dev/build/debug/bindings/python:$BASE/ns-3-dev/src/visualizer:$BASE/pybindgen-0.15.0.795:$BASE/build/lib/python2.6/site-packages/:$BASE/ns-3-dce
 export LD_LIBRARY_PATH PKG_CONFIG_PATH PATH PYTHONPATH DCE_PATH
 cd $BASE/ns-3-dce-quagga
