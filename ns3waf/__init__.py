@@ -140,7 +140,7 @@ def _check_win32(conf):
 def _check_dependencies(conf, required, mandatory):
     found = []
     for module in required:
-        retval = conf.check_cfg(package = 'libns3-dev-%s' % module.lower(),
+        retval = conf.check_cfg(package = 'libns3-dev-%s-debug' % module.lower(),
                                 args='--cflags --libs', mandatory=mandatory,
                                 msg="Checking for ns3-%s" % module.lower(),
                                 uselib_store='NS3_%s' % module.upper())
