@@ -74,6 +74,8 @@ sed "s/uname -p/uname -m/" processor.mk >a
 mv a processor.mk
 sed 's/\$@/\$@\//g' Makefile.print >a
 mv a Makefile.print
+rm -f config
+make config
 
 sed "s/CONFIG_IPV6=m/CONFIG_IPV6=y/" config >a
 mv a config
