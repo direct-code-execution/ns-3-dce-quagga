@@ -100,7 +100,7 @@ echo "#include \"ipv4-dce-routing-helper.h\"" >> ../build/include/ns3/dce-module
 ./waf configure --prefix=`pwd`/../build --verbose --enable-kernel-stack=`pwd`/../ns-3-linux
 ./waf
 ./waf install
-echo Launch NS3TEST-DCE
+echo Launch NS3QUAGGATEST-DCE
 ./build/bin/ns3test-dce-quagga --verbose
 
 

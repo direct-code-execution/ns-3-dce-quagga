@@ -409,13 +409,17 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
     { "ripngd", 120, false},
 #endif
     { "ripngd", 120, true},
+#ifdef FIXME
     { "ospfd", 120, false},
+#endif
     { "ospfd", 120, true},
 #ifdef FIXME
     { "ospf6d", 120, false},
 #endif
     { "ospf6d", 120, true},
+#ifdef FIXME
     { "bgpd", 120, false},
+#endif
     { "bgpd", 120, true},
 #ifdef FIXME
     { "bgpd_v6", 120, false},
