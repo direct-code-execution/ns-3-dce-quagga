@@ -250,10 +250,6 @@ DceQuaggaTestCase::DoRun (void)
     }
   else if (m_testname == "ospf6d")
     {
-      if (m_debug)
-        {
-          quagga.EnableOspf6Debug (nodes);
-        }
       quagga.EnableOspf6 (nodes, routerPort.c_str ());
     }
   else if (m_testname == "bgpd")
@@ -270,13 +266,17 @@ DceQuaggaTestCase::DoRun (void)
     }
   else if (m_testname == "radvd")
     {
-      if (m_debug)
-        {
-          quagga.EnableZebraDebug (nodes.Get (0));
-        }
       quagga.EnableRadvd (nodes.Get (0), routerPort.c_str (), "2001:db8:0:1::/64");
     }
 
+  if (m_debug)
+    {
+      quagga.EnableRipDebug (nodes);
+      quagga.EnableRipngDebug (nodes);
+      quagga.EnableOspfDebug (nodes);
+      quagga.EnableOspf6Debug (nodes);
+      quagga.EnableZebraDebug (nodes.Get (0));
+    }
   quagga.Install (nodes);
 
   if (m_debug)

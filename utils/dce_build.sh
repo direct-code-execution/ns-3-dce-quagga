@@ -57,8 +57,28 @@ grep -v point-layout wscript > a
 mv a wscript
 grep -v quagga-helper wscript > a
 mv a wscript
+sed "s/DCE (getpwnam)/NATIVE (getpwnam)/" model/libc-ns3.h > a
+mv a model/libc-ns3.h
+sed "s/domain == AF_INET6/domain == AF_INET6 \&\& 0/" model/dce-fd.cc > a
+mv a model/dce-fd.cc
+sed "s/NS_LOG_FUNCTION (this << task << task->m_state);/NS_LOG_FUNCTION (this << task << task->m_state);\n  if (\!this) return;/" model/task-manager.cc >a
+mv a model/task-manager.cc
 ./waf
 ./waf install
+cd ..
+
+# mod ns-3-linux (FIXME)
+cd ns-3-linux
+sed "s/CONFIG_IPV6=m/CONFIG_IPV6=y/" config >a
+mv a config
+sed "s/case CAP_NET_RAW: return 1;/case CAP_NET_RAW: \n  case CAP_NET_BIND_SERVICE:\n  case CAP_NET_ADMIN: \n  return 1;/" sim/security.c > a
+mv a sim/security.c
+sed "s/msg->msg_iov = kernel_iov;/struct cmsghdr *user_cmsgh = msg->msg_control;\n  size_t user_cmsghlen = msg->msg_controllen;\n msg->msg_iov = kernel_iov;/" sim/sim-socket.c > a
+sed "s/msg->msg_iov = user_iov;/msg->msg_iov = user_iov;\n  msg->msg_control = user_cmsgh; \n  msg->msg_controllen = user_cmsghlen - msg->msg_controllen;/" a >b
+sed "s/size += msg->msg_iov->iov_len;/size += msg->msg_iov[i].iov_len;/" b > c
+mv c sim/sim-socket.c
+
+make
 cd ..
 
 # build ns-3-dce-quagga
