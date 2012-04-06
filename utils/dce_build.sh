@@ -69,6 +69,7 @@ cd ..
 
 # mod ns-3-linux (FIXME)
 cd ns-3-linux
+make clean
 sed "s/uname -p/uname -m/" processor.mk >a
 mv a processor.mk
 sed 's/\$@/\$@\//g' Makefile.print >a
