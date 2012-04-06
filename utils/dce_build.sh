@@ -50,25 +50,30 @@ cp libvdl.so ../build/lib
 cd ..
 
 # mod ns-3-dce (FIXME)
+hg clone http://202.249.37.8/ical/ns-3-dce-patches/
 cd ns-3-dce
-grep -v dce-zebra wscript > a
-mv a wscript
-grep -v point-layout wscript > a
-mv a wscript
-grep -v quagga-helper wscript > a
-mv a wscript
-sed "s/DCE (getpwnam)/NATIVE (getpwnam)/" model/libc-ns3.h > a
-mv a model/libc-ns3.h
-sed "s/domain == AF_INET6/domain == AF_INET6 \&\& 0/" model/dce-fd.cc > a
-mv a model/dce-fd.cc
-sed "s/NS_LOG_FUNCTION (this << task << task->m_state);/NS_LOG_FUNCTION (this << task << task->m_state);\n  if (\!this) return;/" model/task-manager.cc >a
-mv a model/task-manager.cc
+#grep -v dce-zebra wscript > a
+#mv a wscript
+#grep -v point-layout wscript > a
+#mv a wscript
+#grep -v quagga-helper wscript > a
+#mv a wscript
+#sed "s/DCE (getpwnam)/NATIVE (getpwnam)/" model/libc-ns3.h > a
+#mv a model/libc-ns3.h
+#sed "s/NS_LOG_FUNCTION (this << task << task->m_state);/NS_LOG_FUNCTION (this << task << task->m_state);\n  if (\!this) return;/" model/task-manager.cc >a
+#mv a model/task-manager.cc
+patch -p1 < ../ns-3-dce-patches/120406-dce-quagga-support.patch
 ./waf
 ./waf install
 cd ..
 
 # mod ns-3-linux (FIXME)
 cd ns-3-linux
+sed "s/uname -p/uname -m/" processor.mk >a
+mv a processor.mk
+sed 's/\$@/\$@\//g' Makefile.print >a
+mv a Makefile.print
+
 sed "s/CONFIG_IPV6=m/CONFIG_IPV6=y/" config >a
 mv a config
 sed "s/case CAP_NET_RAW: return 1;/case CAP_NET_RAW: \n  case CAP_NET_BIND_SERVICE:\n  case CAP_NET_ADMIN: \n  return 1;/" sim/security.c > a
