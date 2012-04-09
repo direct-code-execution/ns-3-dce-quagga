@@ -62,6 +62,11 @@ cd ns-3-dce
 #mv a model/libc-ns3.h
 #sed "s/NS_LOG_FUNCTION (this << task << task->m_state);/NS_LOG_FUNCTION (this << task << task->m_state);\n  if (\!this) return;/" model/task-manager.cc >a
 #mv a model/task-manager.cc
+#rm -f ../build/include/ns3/quagga-helper.h 
+#cp ../ns-3-dce/helper/ipv4-dce-routing-helper.h  ../build/include/ns3/
+#grep -v quagga-helper.h ../build/include/ns3/dce-module.h > a
+#mv a ../build/include/ns3/dce-module.h 
+#echo "#include \"ipv4-dce-routing-helper.h\"" >> ../build/include/ns3/dce-module.h 
 patch -p1 < ../ns-3-dce-patches/120406-dce-quagga-support.patch
 ./waf
 ./waf install
@@ -93,20 +98,8 @@ cd ..
 
 # build ns-3-dce-quagga
 cd ns-3-dce-quagga
-cd ../
-BASE=$PWD
-LD_LIBRARY_PATH="$BASE/ns-3-dce-quagga/build/lib:$BASE/build/lib:$BASE/ns-3-dce/build/lib:$BASE/build/bin:$BASE/ns-3-dce/build/bin:."
-PKG_CONFIG_PATH="$BASE/build/lib/pkgconfig"
-PATH="$BASE/build/bin:$BASE/build/sbin:$BASE/ns-3-dce/build/bin_dce:$PATH"
-DCE_PATH=$PATH
-PYTHONPATH=$BASE/ns-3-dev/build/debug/bindings/python:$BASE/ns-3-dev/src/visualizer:$BASE/pybindgen-0.15.0.795:$BASE/build/lib/python2.6/site-packages/:$BASE/ns-3-dce
-export LD_LIBRARY_PATH PKG_CONFIG_PATH PATH PYTHONPATH DCE_PATH
-cd $BASE/ns-3-dce-quagga
-rm -f ../build/include/ns3/quagga-helper.h 
-cp ../ns-3-dce/helper/ipv4-dce-routing-helper.h  ../build/include/ns3/
-grep -v quagga-helper.h ../build/include/ns3/dce-module.h > a
-mv a ../build/include/ns3/dce-module.h 
-echo "#include \"ipv4-dce-routing-helper.h\"" >> ../build/include/ns3/dce-module.h 
+. ../ns-3-dce/utils/setenv.sh
+cd ns-3-dce-quagga
 ./waf configure --prefix=`pwd`/../build --verbose --enable-kernel-stack=`pwd`/../ns-3-linux
 ./waf
 ./waf install
