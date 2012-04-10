@@ -239,18 +239,34 @@ DceQuaggaTestCase::DoRun (void)
   if (m_testname == "ripd")
     {
       quagga.EnableRip (nodes, routerPort.c_str ());
+      if (m_debug)
+        {
+          quagga.EnableRipDebug (nodes);
+        }
     }
   else if (m_testname == "ripngd")
     {
       quagga.EnableRipng (nodes, routerPort.c_str ());
+      if (m_debug)
+        {
+          quagga.EnableRipngDebug (nodes);
+        }
     }
   else if (m_testname == "ospfd")
     {
       quagga.EnableOspf (nodes, "10.0.0.0/24");
+      if (m_debug)
+        {
+          quagga.EnableOspfDebug (nodes);
+        }
     }
   else if (m_testname == "ospf6d")
     {
       quagga.EnableOspf6 (nodes, routerPort.c_str ());
+      if (m_debug)
+        {
+          quagga.EnableOspf6Debug (nodes);
+        }
     }
   else if (m_testname == "bgpd")
     {
@@ -267,16 +283,12 @@ DceQuaggaTestCase::DoRun (void)
   else if (m_testname == "radvd")
     {
       quagga.EnableRadvd (nodes.Get (0), routerPort.c_str (), "2001:db8:0:1::/64");
+      if (m_debug)
+        {
+          quagga.EnableZebraDebug (nodes.Get (0));
+        }
     }
 
-  if (m_debug)
-    {
-      quagga.EnableRipDebug (nodes);
-      quagga.EnableRipngDebug (nodes);
-      quagga.EnableOspfDebug (nodes);
-      quagga.EnableOspf6Debug (nodes);
-      quagga.EnableZebraDebug (nodes.Get (0));
-    }
   quagga.Install (nodes);
 
   if (m_debug)
