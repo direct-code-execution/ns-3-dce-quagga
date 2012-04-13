@@ -12,6 +12,6 @@ Contents:
    :maxdepth: 30
 
    getting-started
-   how-it-works
+   tutorial
    dce-readme
     
