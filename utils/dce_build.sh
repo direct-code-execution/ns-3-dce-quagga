@@ -63,21 +63,6 @@ cd ..
 # mod ns-3-dce (FIXME)
 hg clone http://202.249.37.8/ical/ns-3-dce-patches/
 cd ns-3-dce
-#grep -v dce-zebra wscript > a
-#mv a wscript
-#grep -v point-layout wscript > a
-#mv a wscript
-#grep -v quagga-helper wscript > a
-#mv a wscript
-#sed "s/DCE (getpwnam)/NATIVE (getpwnam)/" model/libc-ns3.h > a
-#mv a model/libc-ns3.h
-#sed "s/NS_LOG_FUNCTION (this << task << task->m_state);/NS_LOG_FUNCTION (this << task << task->m_state);\n  if (\!this) return;/" model/task-manager.cc >a
-#mv a model/task-manager.cc
-#rm -f ../build/include/ns3/quagga-helper.h 
-#cp ../ns-3-dce/helper/ipv4-dce-routing-helper.h  ../build/include/ns3/
-#grep -v quagga-helper.h ../build/include/ns3/dce-module.h > a
-#mv a ../build/include/ns3/dce-module.h 
-#echo "#include \"ipv4-dce-routing-helper.h\"" >> ../build/include/ns3/dce-module.h 
 patch -p1 < ../ns-3-dce-patches/120406-dce-quagga-support.patch
 ./waf
 ./waf install
@@ -91,33 +76,20 @@ then
      cd ns-3-linux
      patch -p1 < ../ns-3-linux-patches/120406-linux-quagga-support.patch
      make clean
-     #sed "s/uname -p/uname -m/" processor.mk >a
-     #mv a processor.mk
-     #sed 's/\$@/\$@\//g' Makefile.print >a
-     #mv a Makefile.print
      rm -f config
      make config
-     
-     #sed "s/CONFIG_IPV6=m/CONFIG_IPV6=y/" config >a
-     #mv a config
-     #sed "s/case CAP_NET_RAW: return 1;/case CAP_NET_RAW: \n  case CAP_NET_BIND_SERVICE:\n  case CAP_NET_ADMIN: \n  return 1;/" sim/security.c > a
-     #mv a sim/security.c
-     #sed "s/msg->msg_iov = kernel_iov;/struct cmsghdr *user_cmsgh = msg->msg_control;\n  size_t user_cmsghlen = msg->msg_controllen;\n msg->msg_iov = kernel_iov;/" sim/sim-socket.c > a
-     #sed "s/msg->msg_iov = user_iov;/msg->msg_iov = user_iov;\n  msg->msg_control = user_cmsgh; \n  msg->msg_controllen = user_cmsghlen - msg->msg_controllen;/" a >b
-     #sed "s/size += msg->msg_iov->iov_len;/size += msg->msg_iov[i].iov_len;/" b > c
-     #mv c sim/sim-socket.c
      
      make
      cd ..
 fi
 
 # build ns-3-dce-quagga
+cd ns-3-dce-quagga
 if [ "YES" == "$USE_KERNEL" ]
 then
     WAF_KERNEL=--enable-kernel-stack=`pwd`/../ns-3-linux
 fi
 
-cd ns-3-dce-quagga
 . ../ns-3-dce/utils/setenv.sh
 cd ../ns-3-dce-quagga
 ./waf configure --prefix=`pwd`/../build --verbose $WAF_KERNEL
