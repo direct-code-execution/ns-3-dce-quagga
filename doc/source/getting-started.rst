@@ -8,8 +8,9 @@ re-implementation of the model, and potentially improve the result of
 the simulation since it already "actively running" in the real world.
 
 It was started as a Google Summer of Code (GSoC) 2008 by Liu Jian with
-a numerous contribution especially on the netlink implementation with
-quagga porting. You can look at his effort at the `link
+numerous contributions especially on the netlink implementation with
+quagga porting into ns-3-simu (former name of ns-3-dce). You can look
+at his effort at the `link
 <https://www.nsnam.org/wiki/index.php/Real_World_Application_Integration>`_.
 
 
