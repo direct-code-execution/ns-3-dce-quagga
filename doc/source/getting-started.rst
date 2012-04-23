@@ -13,6 +13,32 @@ quagga porting into ns-3-simu (former name of ns-3-dce). You can look
 at his effort at the `link
 <https://www.nsnam.org/wiki/index.php/Real_World_Application_Integration>`_.
 
+Current Status (2012/4/23)
+**************************
+
+Quagga support on DCE does not fully support all the environment that
+DCE has. The following shows the limited availability of each
+protocol.
+
++------------------+-------------+--------------+----------+
+|                  | Basic Mode  | Advanced Mode|  Remarks |
+|                  | (ns-3 stack)| (ns-3-linux) |          |
++==================+=============+==============+==========+
+| Rtadvd (zebra)   |      NG     |     OK       |          |
++------------------+-------------+--------------+----------+
+| RIPv1/v2 (ripd)  |      NG     |     OK       |          |
++------------------+-------------+--------------+----------+
+| RIPng  (ripngd)  |      NG     |     OK       |          |
++------------------+-------------+--------------+----------+
+| OSPFv2  (ospfd)  |      OK     |     OK       |          |
++------------------+-------------+--------------+----------+
+| OSPFv3 (ospf6d)  |      NG     |     OK       |          |
++------------------+-------------+--------------+----------+
+| BGP  (bgpd)      |      OK     |     OK       |          |
++------------------+-------------+--------------+----------+
+| BGP+ (bgpd)      |      NG     |     OK       |          |
++------------------+-------------+--------------+----------+
+
 
 Getting Started
 ---------------
@@ -36,7 +62,7 @@ or
 
 
 Building ns-3, DCE, and DCE-Quagga
-*********************
+**********************************
 
 First you need to download NS-3 DCE using mercurial:
 

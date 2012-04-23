@@ -11,16 +11,4 @@ Contents:
 .. toctree::
    :maxdepth: 30
 
-   what-is-this
    getting-started
-    prerequisite 
-    
-   configuration-manual
-    basic
-    ospf
-    ospf-with-ns-3-linux
-   customizing-helper
-   customizing-binary
-   faq 
-    dce-core-missing-func
-    
