@@ -156,18 +156,6 @@ def build_dce_kernel_examples(module):
 
 
 def build(bld):
-    if bld.env['KERNEL_STACK']:
-        kernel_source = [
-            'model/linux-socket-fd-factory.cc',
-            'model/linux-socket-fd.cc',
-            ]
-        kernel_headers = [ 'model/linux-socket-fd-factory.h']
-        kernel_includes = [bld.env['KERNEL_STACK']]
-    else:
-        kernel_source = []
-        kernel_headers = []
-        kernel_includes = []
-
     module_source = [
         'helper/quagga-helper.cc',
         ]
@@ -181,7 +169,6 @@ def build(bld):
                                   source=module_source,
                                   headers=module_headers,
                                   use=uselib,
-                                  includes=kernel_includes,
                                   lib=['dl'])
 #                                  lib=['dl','efence'])
 

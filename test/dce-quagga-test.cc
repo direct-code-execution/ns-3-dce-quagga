@@ -160,6 +160,9 @@ DceQuaggaTestCase::DoRun (void)
   dev2 = csma.Install (nodes.Get (1));
   DceManagerHelper processManager;
 
+  //  processManager.SetLoader ("ns3::DlmLoaderFactory");
+  processManager.SetTaskManagerAttribute ("FiberManagerType",
+                                          EnumValue (0));
   //
   // Step 2
   // Address Configuration
@@ -202,9 +205,6 @@ DceQuaggaTestCase::DoRun (void)
     }
   else if (m_useKernel == true)
     {
-      //      processManager.SetLoader ("ns3::DlmLoaderFactory");
-      processManager.SetTaskManagerAttribute ("FiberManagerType",
-                                              EnumValue (0));
       processManager.SetNetworkStack ("ns3::LinuxSocketFdFactory",
                                       "Library", StringValue ("libnet-next-2.6.so"));
       processManager.Install (nodes);
@@ -411,31 +411,19 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
   const testPair tests[] = {
 #ifdef FIXME
     { "radvd", 120, false},
-#endif
-    { "radvd", 120, true},
-#ifdef FIXME
     { "ripd", 120, false},
-#endif
-    { "ripd", 120, true},
-#ifdef FIXME
     { "ripngd", 120, false},
-#endif
-    { "ripngd", 120, true},
-#ifdef FIXME
-    { "ospfd", 120, false},
-#endif
-    { "ospfd", 120, true},
-#ifdef FIXME
     { "ospf6d", 120, false},
-#endif
-    { "ospf6d", 120, true},
-#ifdef FIXME
-    { "bgpd", 120, false},
-#endif
-    { "bgpd", 120, true},
-#ifdef FIXME
     { "bgpd_v6", 120, false},
 #endif
+    { "ospfd", 120, false},
+    { "bgpd", 120, false},
+    { "radvd", 120, true},
+    { "ripd", 120, true},
+    { "ripngd", 120, true},
+    { "ospfd", 120, true},
+    { "ospf6d", 120, true},
+    { "bgpd", 120, true},
     { "bgpd_v6", 120, true},
   };
 
