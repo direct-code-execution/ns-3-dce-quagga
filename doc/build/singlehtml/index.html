@@ -52,8 +52,69 @@ BGP+, RAadv) as models of network simulation. It reduces the time of
 re-implementation of the model, and potentially improve the result of
 the simulation since it already &#8220;actively running&#8221; in the real world.</p>
 <p>It was started as a Google Summer of Code (GSoC) 2008 by Liu Jian with
-a numerous contribution especially on the netlink implementation with
-quagga porting. You can look at his effort at the <a class="reference external" href="https://www.nsnam.org/wiki/index.php/Real_World_Application_Integration">link</a>.</p>
+numerous contributions especially on the netlink implementation with
+quagga porting into ns-3-simu (former name of ns-3-dce). You can look
+at his effort at the <a class="reference external" href="https://www.nsnam.org/wiki/index.php/Real_World_Application_Integration">link</a>.</p>
+<div class="section" id="current-status-2012-4-23">
+<h3>Current Status (2012/4/23)<a class="headerlink" href="#current-status-2012-4-23" title="Permalink to this headline">¶</a></h3>
+<p>Quagga support on DCE does not fully support all the environment that
+DCE has. The following shows the limited availability of each
+protocol.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="24%" />
+<col width="25%" />
+<col width="18%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">&nbsp;</th>
+<th class="head">Basic Mode
+(ns-3 stack)</th>
+<th class="head">Advanced Mode
+(ns-3-linux)</th>
+<th class="head">Remarks</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Rtadvd (zebra)</td>
+<td>NG</td>
+<td>OK</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>RIPv1/v2 (ripd)</td>
+<td>NG</td>
+<td>OK</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>RIPng  (ripngd)</td>
+<td>NG</td>
+<td>OK</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>OSPFv2  (ospfd)</td>
+<td>OK</td>
+<td>OK</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>OSPFv3 (ospf6d)</td>
+<td>NG</td>
+<td>OK</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>BGP  (bgpd)</td>
+<td>OK</td>
+<td>OK</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>BGP+ (bgpd)</td>
+<td>NG</td>
+<td>OK</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section" id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
@@ -175,7 +236,10 @@ Quagga, your extended binary should be located at the directory
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html#document-index">Table Of Contents</a></h3>
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="index.html#document-getting-started">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-getting-started">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="index.html#current-status-2012-4-23">Current Status (2012/4/23)</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="index.html#getting-started">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="index.html#prerequisite">Prerequisite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#building-ns-3-dce-and-dce-quagga">Building ns-3, DCE, and DCE-Quagga</a></li>
