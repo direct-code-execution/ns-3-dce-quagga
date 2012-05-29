@@ -73,8 +73,9 @@ int main (int argc, char *argv[])
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 
-  NetDeviceContainer devices;
+  NetDeviceContainer devices, devices2;
   devices = pointToPoint.Install (nodes);
+  devices2 = pointToPoint.Install (nodes);
   DceManagerHelper processManager;
 
   //
@@ -85,7 +86,6 @@ int main (int argc, char *argv[])
   if (netStack == "ns3")
     {
       Ipv4AddressHelper ipv4AddrHelper;
-      Ipv6AddressHelper ipv6AddrHelper;
       // Internet stack install
       InternetStackHelper stack;    // IPv4 is required for GlobalRouteMan
       Ipv4DceRoutingHelper ipv4RoutingHelper;
@@ -93,7 +93,9 @@ int main (int argc, char *argv[])
       stack.Install (nodes);
 
       ipv4AddrHelper.SetBase ("10.0.0.0", "255.255.255.0");
-      Ipv4InterfaceContainer interfaces = ipv4AddrHelper.Assign (devices);
+      ipv4AddrHelper.Assign (devices);
+      ipv4AddrHelper.SetBase ("11.0.0.0", "255.255.255.0");
+      ipv4AddrHelper.Assign (devices2);
 
       processManager.SetNetworkStack ("ns3::Ns3SocketFdFactory");
       processManager.Install (nodes);
@@ -115,8 +117,10 @@ int main (int argc, char *argv[])
 
       // IP address configuration
       AddAddress (nodes.Get (0), Seconds (0.1), "sim0", "10.0.0.1/24");
+      AddAddress (nodes.Get (0), Seconds (0.1), "sim1", "11.0.0.1/24");
       RunIp (nodes.Get (0), Seconds (0.11), "link set lo up");
       RunIp (nodes.Get (0), Seconds (0.11), "link set sim0 up");
+      RunIp (nodes.Get (0), Seconds (0.11), "link set sim1 up");
 
       AddAddress (nodes.Get (1), Seconds (0.1), "sim0", "10.0.0.2/24");
       RunIp (nodes.Get (1), Seconds (0.11), "link set lo up");
@@ -128,6 +132,7 @@ int main (int argc, char *argv[])
       QuaggaHelper quagga;
       quagga.EnableRip (nodes, "sim0");
       quagga.EnableRipDebug (nodes);
+      quagga.EnableZebraDebug (nodes);
       quagga.Install (nodes);
     }
 
