@@ -20,24 +20,24 @@ Quagga support on DCE does not fully support all the environment that
 DCE has. The following shows the limited availability of each
 protocol.
 
-+------------------+-------------+--------------+----------+
-|                  | Basic Mode  | Advanced Mode|  Remarks |
-|                  | (ns-3 stack)| (ns-3-linux) |          |
-+==================+=============+==============+==========+
-| Rtadvd (zebra)   |      NG     |     OK       |          |
-+------------------+-------------+--------------+----------+
-| RIPv1/v2 (ripd)  |      NG     |     OK       |          |
-+------------------+-------------+--------------+----------+
-| RIPng  (ripngd)  |      NG     |     OK       |          |
-+------------------+-------------+--------------+----------+
-| OSPFv2  (ospfd)  |      OK     |     OK       |          |
-+------------------+-------------+--------------+----------+
-| OSPFv3 (ospf6d)  |      NG     |     OK       |          |
-+------------------+-------------+--------------+----------+
-| BGP  (bgpd)      |      OK     |     OK       |          |
-+------------------+-------------+--------------+----------+
-| BGP+ (bgpd)      |      NG     |     OK       |          |
-+------------------+-------------+--------------+----------+
++------------------+-------------+--------------+---------------+
+|                  | Basic Mode  | Advanced Mode|    Remarks    |
+|                  | (ns-3 stack)| (ns-3-linux) |               |
++==================+=============+==============+===============+
+| Rtadvd (zebra)   |      NG     |     OK       |               |
++------------------+-------------+--------------+---------------+
+| RIPv1/v2 (ripd)  |      NG     |     OK       | bind() fail   |
++------------------+-------------+--------------+---------------+
+| RIPng  (ripngd)  |      NG     |     OK       | send() fail   |
++------------------+-------------+--------------+---------------+
+| OSPFv2  (ospfd)  |      OK     |     OK       |               |
++------------------+-------------+--------------+---------------+
+| OSPFv3 (ospf6d)  |      NG     |     OK       | send() fail   |
++------------------+-------------+--------------+---------------+
+| BGP  (bgpd)      |      OK     |     OK       |               |
++------------------+-------------+--------------+---------------+
+| BGP+ (bgpd)      |      NG     |     OK       |               |
++------------------+-------------+--------------+---------------+
 
 
 Getting Started
@@ -46,7 +46,7 @@ Getting Started
 Prerequisite
 ************
 Quagga support on DCE requires several packages:
-autoconf, automake, flex, git-core, wget, g++, libc-dbg, bison
+autoconf, automake, flex, git-core, wget, g++, libc-dbg, bison, indent, pkgconfig
 
 You need to install the correspondent packages in advance.
 
@@ -90,7 +90,6 @@ After DCE is installed successfully, download ns-3-dce-quagga.
 
 ::
 
-  $ mkdir test_build_ns3_dce
   $ cd test_build_ns3_dce
   $ hg clone http://code.nsnam.org/thehajime/ns-3-dce-quagga
 
@@ -102,22 +101,18 @@ You can build ns-3-dce-quagga as following:
 
   $ cd ns-3-dce-quagga
   $ ./utils/dce_build.sh -k
-  clone readversiondef
-  ...
-  2 files updated, 0 files merged, 0 files removed, 0 files unresolved
-  clone ns-3-dce
-  ...
-  2105 files updated, 0 files merged, 0 files removed, 0 files unresolved
   ...
   Launch NS3QUAGGATEST-DCE
-  PASS dce-quagga 14.290ms
-    PASS Check that process "radvd-kernel" completes correctly. 2.650ms
-    PASS Check that process "ripd-kernel" completes correctly. 1.300ms
-    PASS Check that process "ripngd-kernel" completes correctly. 1.250ms
-    PASS Check that process "ospfd-kernel" completes correctly. 3.620ms
-    PASS Check that process "ospf6d-kernel" completes correctly. 1.530ms
-    PASS Check that process "bgpd-kernel" completes correctly. 1.940ms
-    PASS Check that process "bgpd_v6-kernel" completes correctly. 2.000ms
+  PASS dce-quagga 16.310ms
+    PASS Check that process "ospfd (ns3)" completes correctly. 2.010ms
+    PASS Check that process "bgpd (ns3)" completes correctly. 1.180ms
+    PASS Check that process "radvd (kernel)" completes correctly. 2.000ms
+    PASS Check that process "ripd (kernel)" completes correctly. 1.270ms
+    PASS Check that process "ripngd (kernel)" completes correctly. 1.200ms
+    PASS Check that process "ospfd (kernel)" completes correctly. 3.500ms
+    PASS Check that process "ospf6d (kernel)" completes correctly. 1.490ms
+    PASS Check that process "bgpd (kernel)" completes correctly. 1.740ms
+    PASS Check that process "bgpd_v6 (kernel)" completes correctly. 1.920ms
     
 You can see the above PASSed test if everything goes fine. Congrats!
 
@@ -130,8 +125,6 @@ Call the setenv.sh script to correctly setup the environment variables (i.e., PA
 
   $ source ns-3-dce/utils/setenv.sh
 
-Configuration Manual
-********************
 Examples
 ********
 Basic
@@ -141,19 +134,87 @@ Basic
   $ cd ns-3-dce-quagga
   $ ./build/bin/dce-zebra-simple
 
+if everything goes fine, you would see the file "routes.log" in the current directory as follows.
+The routes "10.1.0.0/24" and "10.2.0.0/24" was announced by ospfd accordingly.
+
+::
+
+  Time: 70s
+  Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+  127.0.0.0       0.0.0.0         255.0.0.0       U     0      -      -   0
+  10.1.1.0        0.0.0.0         255.255.255.0   U     0      -      -   1
+  10.2.1.0        0.0.0.0         255.255.255.0   U     0      -      -   2
+  10.1.0.0        10.2.1.1        255.255.255.0   UGS   20     -      -   2
+  10.2.0.0        10.1.1.1        255.255.255.0   UGS   20     -      -   1
+
+
 OSPF
 ####
+Another example of OSPF is generating pcap file.
+
 ::
 
   $ cd ns-3-dce-quagga
   $ ./build/bin/dce-quagga-ospfd
 
+You would see the following parsed output by tcpdump.
+
+::
+
+  $ tcpdump -r dce-quagga-ospfd-0-0.pcap -n -vvv 
+   :
+   (snip)
+  09:00:45.106325 IP (tos 0x0, ttl 1, id 0, offset 0, flags [none], proto OSPF (89), length 72, bad cksum 0 (->a55b)!)
+      10.0.0.2 > 10.0.0.1: OSPFv2, Database Description, length 52
+          Router-ID 10.0.0.2, Backbone Area, Authentication Type: none (0)
+          Options [External], DD Flags [Master], MTU: 65535, Sequence: 0x4b3d3b2e
+            Advertising Router 10.0.0.2, seq 0x80000002, age 0s, length 16
+              Router LSA (1), LSA-ID: 10.0.0.2
+              Options: [External]
+  
+
+
 OSPF with ns-3-linux
 ####################
+The final example of OSPF is using Linux kernel stack via DCE.
+
 ::
 
   $ cd ns-3-dce-quagga
   $ ./build/bin/dce-quagga-ospfd --netStack=linux
+
+then, you would see the following parsed output by tcpdump.
+
+::
+
+  $ tcpdump -r dce-quagga-ospfd-0-0.pcap -n -vvv 
+   :
+   (snip)
+  09:00:45.106325 IP (tos 0xc0, ttl 1, id 15116, offset 0, flags [none], proto OSPF (89), length 72)
+      10.0.0.2 > 10.0.0.1: OSPFv2, Database Description, length 52
+          Router-ID 10.0.0.2, Backbone Area, Authentication Type: none (0)
+          Options [External], DD Flags [Master], MTU: 1500, Sequence: 0x4b3d3b2e
+            Advertising Router 10.0.0.2, seq 0x80000002, age 0s, length 16
+              Router LSA (1), LSA-ID: 10.0.0.2
+              Options: [External]
+
+Configuration Manual
+********************
+In order to utilize quagga protocols in ns-3, users need to define in the scenario via ns3::QuaggaHelper.
+
+::
+
+     #include "ns3/quagga-helper.h"
+
+     int main (int argc, char *argv[])
+     {
+       QuaggaHelper quagga;
+       quagga.EnableOspf (node, "10.0.0.0/8"); 
+       quagga.EnableOspfDebug (node);
+       quagga.EnableZebraDebug (node);
+       quagga.Install (node);
+     }
+     
 
 
 Modifying DCE Quagga
@@ -182,5 +243,5 @@ Quagga, your extended binary should be located at the directory
 
 FAQ 
 ---
-
+(TBA)
 

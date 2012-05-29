@@ -62,10 +62,10 @@ DCE has. The following shows the limited availability of each
 protocol.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="33%" />
-<col width="24%" />
+<col width="30%" />
+<col width="22%" />
+<col width="23%" />
 <col width="25%" />
-<col width="18%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">&nbsp;</th>
@@ -85,12 +85,12 @@ protocol.</p>
 <tr class="row-odd"><td>RIPv1/v2 (ripd)</td>
 <td>NG</td>
 <td>OK</td>
-<td>&nbsp;</td>
+<td>bind() fail</td>
 </tr>
 <tr class="row-even"><td>RIPng  (ripngd)</td>
 <td>NG</td>
 <td>OK</td>
-<td>&nbsp;</td>
+<td>send() fail</td>
 </tr>
 <tr class="row-odd"><td>OSPFv2  (ospfd)</td>
 <td>OK</td>
@@ -100,7 +100,7 @@ protocol.</p>
 <tr class="row-even"><td>OSPFv3 (ospf6d)</td>
 <td>NG</td>
 <td>OK</td>
-<td>&nbsp;</td>
+<td>send() fail</td>
 </tr>
 <tr class="row-odd"><td>BGP  (bgpd)</td>
 <td>OK</td>
@@ -121,7 +121,7 @@ protocol.</p>
 <div class="section" id="prerequisite">
 <h3>Prerequisite<a class="headerlink" href="#prerequisite" title="Permalink to this headline">¶</a></h3>
 <p>Quagga support on DCE requires several packages:
-autoconf, automake, flex, git-core, wget, g++, libc-dbg, bison</p>
+autoconf, automake, flex, git-core, wget, g++, libc-dbg, bison, indent, pkgconfig</p>
 <p>You need to install the correspondent packages in advance.</p>
 <div class="highlight-python"><pre>$ sudo apt-get install git-core (in ubuntu/debian)</pre>
 </div>
@@ -145,29 +145,24 @@ recommended at this moment (2012/04/20) so that Quagga runs
 successfully.</p>
 <p>For more information about ns-3-dce core, please refer the <a class="reference external" href="http://www-sop.inria.fr/members/Frederic.Urbani/ns3dceccnx/getting-started.html#building-ns-3-and-dce">DCE manual</a>.</p>
 <p>After DCE is installed successfully, download ns-3-dce-quagga.</p>
-<div class="highlight-python"><pre>$ mkdir test_build_ns3_dce
-$ cd test_build_ns3_dce
+<div class="highlight-python"><pre>$ cd test_build_ns3_dce
 $ hg clone http://code.nsnam.org/thehajime/ns-3-dce-quagga</pre>
 </div>
 <p>You can build ns-3-dce-quagga as following:</p>
 <div class="highlight-python"><pre>$ cd ns-3-dce-quagga
 $ ./utils/dce_build.sh -k
-clone readversiondef
-...
-2 files updated, 0 files merged, 0 files removed, 0 files unresolved
-clone ns-3-dce
-...
-2105 files updated, 0 files merged, 0 files removed, 0 files unresolved
 ...
 Launch NS3QUAGGATEST-DCE
-PASS dce-quagga 14.290ms
-  PASS Check that process "radvd-kernel" completes correctly. 2.650ms
-  PASS Check that process "ripd-kernel" completes correctly. 1.300ms
-  PASS Check that process "ripngd-kernel" completes correctly. 1.250ms
-  PASS Check that process "ospfd-kernel" completes correctly. 3.620ms
-  PASS Check that process "ospf6d-kernel" completes correctly. 1.530ms
-  PASS Check that process "bgpd-kernel" completes correctly. 1.940ms
-  PASS Check that process "bgpd_v6-kernel" completes correctly. 2.000ms</pre>
+PASS dce-quagga 16.310ms
+  PASS Check that process "ospfd (ns3)" completes correctly. 2.010ms
+  PASS Check that process "bgpd (ns3)" completes correctly. 1.180ms
+  PASS Check that process "radvd (kernel)" completes correctly. 2.000ms
+  PASS Check that process "ripd (kernel)" completes correctly. 1.270ms
+  PASS Check that process "ripngd (kernel)" completes correctly. 1.200ms
+  PASS Check that process "ospfd (kernel)" completes correctly. 3.500ms
+  PASS Check that process "ospf6d (kernel)" completes correctly. 1.490ms
+  PASS Check that process "bgpd (kernel)" completes correctly. 1.740ms
+  PASS Check that process "bgpd_v6 (kernel)" completes correctly. 1.920ms</pre>
 </div>
 <p>You can see the above PASSed test if everything goes fine. Congrats!</p>
 </div>
@@ -177,9 +172,6 @@ PASS dce-quagga 14.290ms
 <div class="highlight-python"><pre>$ source ns-3-dce/utils/setenv.sh</pre>
 </div>
 </div>
-<div class="section" id="configuration-manual">
-<h3>Configuration Manual<a class="headerlink" href="#configuration-manual" title="Permalink to this headline">¶</a></h3>
-</div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="basic">
@@ -187,18 +179,69 @@ PASS dce-quagga 14.290ms
 <div class="highlight-python"><pre>$ cd ns-3-dce-quagga
 $ ./build/bin/dce-zebra-simple</pre>
 </div>
+<p>if everything goes fine, you would see the file &#8220;routes.log&#8221; in the current directory as follows.
+The routes &#8220;10.1.0.0/24&#8221; and &#8220;10.2.0.0/24&#8221; was announced by ospfd accordingly.</p>
+<div class="highlight-python"><pre>Time: 70s
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+127.0.0.0       0.0.0.0         255.0.0.0       U     0      -      -   0
+10.1.1.0        0.0.0.0         255.255.255.0   U     0      -      -   1
+10.2.1.0        0.0.0.0         255.255.255.0   U     0      -      -   2
+10.1.0.0        10.2.1.1        255.255.255.0   UGS   20     -      -   2
+10.2.0.0        10.1.1.1        255.255.255.0   UGS   20     -      -   1</pre>
+</div>
 </div>
 <div class="section" id="ospf">
 <h4>OSPF<a class="headerlink" href="#ospf" title="Permalink to this headline">¶</a></h4>
+<p>Another example of OSPF is generating pcap file.</p>
 <div class="highlight-python"><pre>$ cd ns-3-dce-quagga
 $ ./build/bin/dce-quagga-ospfd</pre>
+</div>
+<p>You would see the following parsed output by tcpdump.</p>
+<div class="highlight-python"><pre>$ tcpdump -r dce-quagga-ospfd-0-0.pcap -n -vvv
+ :
+ (snip)
+09:00:45.106325 IP (tos 0x0, ttl 1, id 0, offset 0, flags [none], proto OSPF (89), length 72, bad cksum 0 (-&gt;a55b)!)
+    10.0.0.2 &gt; 10.0.0.1: OSPFv2, Database Description, length 52
+        Router-ID 10.0.0.2, Backbone Area, Authentication Type: none (0)
+        Options [External], DD Flags [Master], MTU: 65535, Sequence: 0x4b3d3b2e
+          Advertising Router 10.0.0.2, seq 0x80000002, age 0s, length 16
+            Router LSA (1), LSA-ID: 10.0.0.2
+            Options: [External]</pre>
 </div>
 </div>
 <div class="section" id="ospf-with-ns-3-linux">
 <h4>OSPF with ns-3-linux<a class="headerlink" href="#ospf-with-ns-3-linux" title="Permalink to this headline">¶</a></h4>
+<p>The final example of OSPF is using Linux kernel stack via DCE.</p>
 <div class="highlight-python"><pre>$ cd ns-3-dce-quagga
 $ ./build/bin/dce-quagga-ospfd --netStack=linux</pre>
 </div>
+<p>then, you would see the following parsed output by tcpdump.</p>
+<div class="highlight-python"><pre>$ tcpdump -r dce-quagga-ospfd-0-0.pcap -n -vvv
+ :
+ (snip)
+09:00:45.106325 IP (tos 0xc0, ttl 1, id 15116, offset 0, flags [none], proto OSPF (89), length 72)
+    10.0.0.2 &gt; 10.0.0.1: OSPFv2, Database Description, length 52
+        Router-ID 10.0.0.2, Backbone Area, Authentication Type: none (0)
+        Options [External], DD Flags [Master], MTU: 1500, Sequence: 0x4b3d3b2e
+          Advertising Router 10.0.0.2, seq 0x80000002, age 0s, length 16
+            Router LSA (1), LSA-ID: 10.0.0.2
+            Options: [External]</pre>
+</div>
+</div>
+</div>
+<div class="section" id="configuration-manual">
+<h3>Configuration Manual<a class="headerlink" href="#configuration-manual" title="Permalink to this headline">¶</a></h3>
+<p>In order to utilize quagga protocols in ns-3, users need to define in the scenario via ns3::QuaggaHelper.</p>
+<div class="highlight-python"><pre>#include "ns3/quagga-helper.h"
+
+int main (int argc, char *argv[])
+{
+  QuaggaHelper quagga;
+  quagga.EnableOspf (node, "10.0.0.0/8");
+  quagga.EnableOspfDebug (node);
+  quagga.EnableZebraDebug (node);
+  quagga.Install (node);
+}</pre>
 </div>
 </div>
 </div>
@@ -224,6 +267,7 @@ Quagga, your extended binary should be located at the directory
 </div>
 <div class="section" id="faq">
 <h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<p>(TBA)</p>
 </div>
 </div>
 </div>
@@ -244,13 +288,13 @@ Quagga, your extended binary should be located at the directory
 <li class="toctree-l2"><a class="reference internal" href="index.html#prerequisite">Prerequisite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#building-ns-3-dce-and-dce-quagga">Building ns-3, DCE, and DCE-Quagga</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#setting-environment">Setting Environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#configuration-manual">Configuration Manual</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#examples">Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="index.html#basic">Basic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#ospf">OSPF</a></li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#ospf-with-ns-3-linux">OSPF with ns-3-linux</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#configuration-manual">Configuration Manual</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="index.html#modifying-dce-quagga">Modifying DCE Quagga</a><ul>
