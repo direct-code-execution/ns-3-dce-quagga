@@ -60,19 +60,19 @@ cp ldso ../build/lib
 cp libvdl.so ../build/lib
 cd ..
 
-# mod ns-3-dce (FIXME)
-hg clone http://202.249.37.8/ical/ns-3-dce-patches/
+# mod ns-3-dce 
+hg clone http://code.nsnam.org/thehajime/ns-3-dce-patches/
 cd ns-3-dce
 patch -p1 < ../ns-3-dce-patches/120406-dce-quagga-support.patch
 ./waf
 ./waf install
 cd ..
 
-# mod ns-3-linux (FIXME)
+# mod ns-3-linux
 if [ "YES" == "$USE_KERNEL" ]
 then
 
-     hg clone http://202.249.37.8/ical/ns-3-linux-patches/
+     hg clone http://code.nsnam.org/thehajime/ns-3-linux-patches/
      cd ns-3-linux
      patch -p1 < ../ns-3-linux-patches/120406-linux-quagga-support.patch
      make clean
