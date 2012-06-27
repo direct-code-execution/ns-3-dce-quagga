@@ -60,29 +60,6 @@ cp ldso ../build/lib
 cp libvdl.so ../build/lib
 cd ..
 
-# mod ns-3-dce 
-hg clone http://code.nsnam.org/thehajime/ns-3-dce-patches/
-cd ns-3-dce
-patch -p1 < ../ns-3-dce-patches/120406-dce-quagga-support.patch
-./waf
-./waf install
-cd ..
-
-# mod ns-3-linux
-if [ "YES" == "$USE_KERNEL" ]
-then
-
-     hg clone http://code.nsnam.org/thehajime/ns-3-linux-patches/
-     cd ns-3-linux
-     patch -p1 < ../ns-3-linux-patches/120406-linux-quagga-support.patch
-     make clean
-     rm -f config
-     make config
-     
-     make
-     cd ..
-fi
-
 # build ns-3-dce-quagga
 cd ns-3-dce-quagga
 if [ "YES" == "$USE_KERNEL" ]

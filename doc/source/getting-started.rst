@@ -46,7 +46,7 @@ Getting Started
 Prerequisite
 ************
 Quagga support on DCE requires several packages:
-autoconf, automake, flex, git-core, wget, g++, libc-dbg, bison, indent, pkgconfig
+autoconf, automake, flex, git-core, wget, g++, libc-dbg, bison, indent, pkgconfig, libssl-dev, libsysfs-dev
 
 You need to install the correspondent packages in advance.
 
