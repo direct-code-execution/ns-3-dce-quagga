@@ -40,7 +40,7 @@ mkdir -p ../ns-3-dce/build/bin_dce
 cd ../
 
 # build ping
-if [ ! -f  $QUAGGA_FILE_TGZ ] ; then
+if [ ! -f  $IPUTILS_FILE_TBZ ] ; then
     wget http://www.skbuff.net/iputils/$IPUTILS_FILE_TBZ \
 	|| { echo "[Error] wget $IPUTILS_FILE_TBZ" ; exit 1 ; }
 fi
