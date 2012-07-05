@@ -55,7 +55,7 @@ if ! grep -qs in6_pktinfo /usr/include/netinet/in.h ; then
   sed "s/__u32 flowlabel;/struct in6_pktinfo { \n struct in6_addr ipi6_addr;\n int             ipi6_ifindex;\n};\n__u32 flowlabel;/" ping6.c > a
   mv a ping6.c
 fi
-make CFLAGS="-fPIC -g" LDFLAGS=-pie \
+make CFLAGS="-fPIC -g -D_GNU_SOURCE -Wstrict-prototypes -Wall" LDFLAGS=-pie \
 	|| { echo "[Error] ping/ping6 make" ; exit 1 ; }
 /bin/cp -f ping ../build/bin/
 /bin/cp -f ping6 ../build/bin/
