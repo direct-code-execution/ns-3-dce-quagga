@@ -71,7 +71,7 @@ static void AddAddress (Ptr<Node> node, Time at, const char *name, const char *a
 class DceQuaggaTestCase : public TestCase
 {
 public:
-  DceQuaggaTestCase (std::string testname, Time maxDuration, bool useK);
+  DceQuaggaTestCase (std::string testname, Time maxDuration, bool useK, bool skip);
   void CsmaRxCallback (std::string context, Ptr<const Packet> packet);
 private:
   virtual void DoRun (void);
@@ -82,6 +82,7 @@ private:
   bool m_useKernel;
   bool m_pingStatus;
   bool m_debug;
+  bool m_skip;
 };
 
 void
@@ -125,14 +126,15 @@ DceQuaggaTestCase::CsmaRxCallback (std::string context, Ptr<const Packet> origin
   //  std::cout << context << " " << packet << " protocol " << protocol << std::endl;
 }
 
-DceQuaggaTestCase::DceQuaggaTestCase (std::string testname, Time maxDuration, bool useK)
-  : TestCase ("Check that process \"" + testname
+DceQuaggaTestCase::DceQuaggaTestCase (std::string testname, Time maxDuration, bool useK, bool skip)
+  : TestCase (skip ? "(SKIP) " + testname + (useK ? " (kernel)" : " (ns3)") : "" "Check that process \"" + testname
               + (useK ? " (kernel)" : " (ns3)") + "\" completes correctly."),
     m_testname (testname),
     m_maxDuration (maxDuration),
     m_useKernel (useK),
     m_pingStatus (false),
-    m_debug (false)
+    m_debug (false),
+    m_skip (skip)
 {
 }
 void
@@ -143,6 +145,11 @@ DceQuaggaTestCase::Finished (int *pstatus, uint16_t pid, int status)
 void
 DceQuaggaTestCase::DoRun (void)
 {
+  if (m_skip)
+    {
+      return;
+    }
+
   //
   //  Step 1
   //  Node Basic Configuration
@@ -428,10 +435,13 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
   };
 
   ::system ("/bin/rm -rf files-*");
+  TypeId tid;
+  bool kern = TypeId::LookupByNameFailSafe ("ns3::LinuxSocketFdFactory", &tid);
   for (unsigned int i = 0; i < sizeof(tests) / sizeof(testPair); i++)
     {
       AddTestCase (new DceQuaggaTestCase (std::string (tests[i].name),
-                                          Seconds (tests[i].duration), tests[i].useKernel));
+                                          Seconds (tests[i].duration), tests[i].useKernel,
+                                         (!kern && tests[i].useKernel)));
     }
 }
 
