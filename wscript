@@ -10,16 +10,6 @@ import sys
 def options(opt):
     opt.tool_options('compiler_cc') 
     ns3waf.options(opt)
-    opt.add_option('--enable-kernel-stack',
-                   help=('Path to the prefix where the kernel wrapper headers are installed'),
-                   default=None,
-                   dest='kernel_stack', type="string")
-
-def search_file(files):
-    for f in files:
-        if os.path.isfile (f):
-            return f
-    return None
 
 def configure(conf):
     ns3waf.check_modules(conf, ['dce'], mandatory = True)
@@ -29,64 +19,10 @@ def configure(conf):
     ns3waf.check_modules(conf, ['point-to-point-layout'], mandatory = False)
     ns3waf.check_modules(conf, ['topology-read', 'applications', 'visualizer'], mandatory = False)
     conf.check_tool('compiler_cc')
-    conf.check(header_name='stdint.h', define_name='HAVE_STDINT_H', mandatory=False)
-    conf.check(header_name='inttypes.h', define_name='HAVE_INTTYPES_H', mandatory=False)
-    conf.check(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H', mandatory=False)
-    conf.check(header_name='sys/types.h', define_name='HAVE_SYS_TYPES_H', mandatory=False)
-    conf.check(header_name='sys/stat.h', define_name='HAVE_SYS_STAT_H', mandatory=False)
-    conf.check(header_name='dirent.h', define_name='HAVE_DIRENT_H', mandatory=False)
 
     conf.env.append_value('CXXFLAGS', '-I/usr/include/python2.6')
     conf.env.append_value('LINKFLAGS', '-pthread')
-    conf.env.append_value('LINKFLAGS', '-Wl,--dynamic-linker=' +
-                             os.path.abspath ('../build/lib/ldso'))
     conf.check (lib='dl', mandatory = True)
-
-    vg_h = conf.check(header_name='valgrind/valgrind.h', mandatory=False)
-    vg_memcheck_h = conf.check(header_name='valgrind/memcheck.h', mandatory=False)
-    if vg_h and vg_memcheck_h:
-        conf.env.append_value('CXXDEFINES', 'HAVE_VALGRIND_H')
-
-    conf.start_msg('Searching C library')
-    libc = search_file ([
-            '/lib64/libc.so.6',
-            '/lib/libc.so.6',
-            ])
-    if libc is None:
-        conf.fatal('not found')
-    else:
-        conf.end_msg(libc, True)
-    conf.env['LIBC_FILE'] = libc
-
-    conf.start_msg('Searching pthread library')
-    libpthread = search_file ([
-            '/lib64/libpthread.so.0',
-            '/lib/libpthread.so.0',
-            ])
-    if libpthread is None:
-        conf.fatal('not found')
-    else:
-        conf.end_msg(libpthread, True)
-    conf.env['LIBPTHREAD_FILE'] = libpthread
-
-    conf.start_msg('Searching rt library')
-    librt = search_file ([
-            '/lib64/librt.so.1',
-            '/lib/librt.so.1',
-            ])
-    if librt is None:
-        conf.fatal('not found')
-    else:
-        conf.end_msg(librt, True)
-    conf.env['LIBRT_FILE'] = librt
-
-    conf.find_program('readversiondef', var='READVERSIONDEF', mandatory=True)
-
-    if Options.options.kernel_stack is not None and os.path.isdir(Options.options.kernel_stack):
-        conf.check(header_name='sim.h',
-                   includes=os.path.join(Options.options.kernel_stack, 'sim/include'))
-      #  conf.check()
-        conf.env['KERNEL_STACK'] = Options.options.kernel_stack
 
     ns3waf.print_feature_summary(conf)
 
@@ -105,7 +41,7 @@ def dce_kw(**kw):
     d['linkflags'] = d.get('linkflags', []) + ['-pie'] + debug_dl
     return d
 
-def build_dce_tests(module, kern):
+def build_dce_tests(module):
     module.add_runner_test(needed=['core', 'dce-quagga', 'internet', 'csma'],
                            source=['test/dce-quagga-test.cc'])
 
@@ -172,8 +108,6 @@ def build(bld):
                                   lib=['dl'])
 #                                  lib=['dl','efence'])
 
-    build_dce_tests(module, bld.env['KERNEL_STACK'])
+    build_dce_tests(module)
     build_dce_examples(module)
-
-    if bld.env['KERNEL_STACK']:
-        build_dce_kernel_examples(module)
+    build_dce_kernel_examples(module)

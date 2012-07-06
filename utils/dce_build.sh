@@ -1,16 +1,5 @@
 #!/bin/bash
 
-USE_KERNEL=NO
-args=("$@")
-NB=$#
-for (( i=0;i<$NB;i++)); do
-    if [ ${args[${i}]} = '-k' ]
-    then
-       USE_KERNEL=YES
-       WGET=wget
-    fi
-done
-
 cd `dirname $BASH_SOURCE`/../..
 
 QUAGGA_FILE_TGZ=quagga-0.99.20.tar.gz
@@ -61,35 +50,16 @@ make CFLAGS="-fPIC -g -D_GNU_SOURCE -Wstrict-prototypes -Wall" LDFLAGS=-pie \
 /bin/cp -f ping6 ../build/bin/
 cd ..
 
-# build elf-loader
-hg clone http://code.nsnam.org/mathieu/elf-loader/
-cd elf-loader
-sed "s/'\/usr\/lib\/debug\/lib\/ld-2.10.1.so'/'\/usr\/lib\/debug\/lib\/ld-2.10.1.so',\n'\/usr\/lib\/debug\/lib\/ld-2.11.1.so'/" extract-system-config.py >a
-mv a extract-system-config.py
-chmod +x extract-system-config.py
-ARCH=`uname -m`/ make clean
-ARCH=`uname -m`/ make vdl-config.h
-ARCH=`uname -m`/ make \
-	|| { echo "[Error] elf-loader make" ; exit 1 ; }
-cp ldso ../build/lib
-cp libvdl.so ../build/lib
-cd ..
-
 # build ns-3-dce-quagga
 cd ns-3-dce-quagga
-if [ "YES" == "$USE_KERNEL" ]
-then
-    WAF_KERNEL=--enable-kernel-stack=`pwd`/../ns-3-linux
-fi
-
 . ../ns-3-dce/utils/setenv.sh
 cd ../ns-3-dce-quagga
-./waf configure --prefix=`pwd`/../build $WAF_KERNEL \
+./waf configure --prefix=`pwd`/../build \
 	|| { echo "[Error] ns-3-dce-quagga waf configure" ; exit 1 ; }
 ./waf \
 	|| { echo "[Error] ns-3-dce-quagga waf make" ; exit 1 ; }
 ./waf install
-echo Launch NS3QUAGGATEST-DCE
+echo Launch NS3-QUAGGA-TEST-DCE
 ./build/bin/ns3test-dce-quagga --verbose
 
 
