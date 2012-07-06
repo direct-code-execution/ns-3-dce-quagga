@@ -18,7 +18,8 @@ grep -v HAVE_CLOCK_MONOTONIC config.h >a
 mv a config.h
 grep -v HAVE_RUSAGE config.h >a
 mv a config.h
-make || { echo "[Error] quagga make" ; exit 1 ; }
+# FIXME when i put librt patches (to ns-3-dce)
+make LIBS="-lcrypt" || { echo "[Error] quagga make" ; exit 1 ; }
 mkdir -p ../ns-3-dce/build/bin_dce
 /bin/cp -f zebra/zebra ../ns-3-dce/build/bin_dce
 /bin/cp -f ripd/ripd ../ns-3-dce/build/bin_dce
