@@ -1,4 +1,5 @@
 #!/bin/bash
+TEST=NO
 
 cd `dirname $BASH_SOURCE`/../..
 
@@ -14,12 +15,9 @@ tar xfz $QUAGGA_FILE_TGZ
 cd quagga-0.99.20/
 CFLAGS="-fPIC -g" LDFLAGS=-pie ./configure --disable-shared --enable-static --disable-user --disable-group --disable-capabilities \
     || { echo "[Error] quagga configure" ; exit 1 ; }
-grep -v HAVE_CLOCK_MONOTONIC config.h >a
-mv a config.h
 grep -v HAVE_RUSAGE config.h >a
 mv a config.h
-# FIXME when i put librt patches (to ns-3-dce)
-make LIBS="-lcrypt" || { echo "[Error] quagga make" ; exit 1 ; }
+make || { echo "[Error] quagga make" ; exit 1 ; }
 mkdir -p ../ns-3-dce/build/bin_dce
 /bin/cp -f zebra/zebra ../ns-3-dce/build/bin_dce
 /bin/cp -f ripd/ripd ../ns-3-dce/build/bin_dce
@@ -47,8 +45,8 @@ if ! grep -qs in6_pktinfo /usr/include/netinet/in.h ; then
 fi
 make CFLAGS="-fPIC -g -D_GNU_SOURCE -Wstrict-prototypes -Wall" LDFLAGS=-pie \
 	|| { echo "[Error] ping/ping6 make" ; exit 1 ; }
-/bin/cp -f ping ../build/bin/
-/bin/cp -f ping6 ../build/bin/
+/bin/cp -f ping ../ns-3-dce/build/bin_dce
+/bin/cp -f ping6 ../ns-3-dce/build/bin_dce
 cd ..
 
 # build ns-3-dce-quagga
@@ -60,7 +58,11 @@ cd ../ns-3-dce-quagga
 ./waf \
 	|| { echo "[Error] ns-3-dce-quagga waf make" ; exit 1 ; }
 ./waf install
-echo Launch NS3-QUAGGA-TEST-DCE
-./build/bin/ns3test-dce-quagga --verbose
+
+if [ $TEST == "YES" ]
+then
+   echo Launch NS3-QUAGGA-TEST-DCE
+   ./build/bin/ns3test-dce-quagga --verbose
+fi
 
 
