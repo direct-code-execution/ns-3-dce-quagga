@@ -29,7 +29,7 @@
 #include "ns3/v4ping.h"
 
 #include <sys/resource.h>
-
+#undef NS3_MPI
 #ifdef NS3_MPI
 #include <mpi.h>
 #include "ns3/mpi-interface.h"
@@ -184,7 +184,6 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("creating quagga process");
   //run quagga programs in every node
   DceManagerHelper processManager;
-  processManager.SetLoader ("ns3::DlmLoaderFactory");
   QuaggaHelper quagga;
 
   //
