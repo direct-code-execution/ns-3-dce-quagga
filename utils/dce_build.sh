@@ -3,12 +3,14 @@ TEST=NO
 
 cd `dirname $BASH_SOURCE`/../..
 
+QUAGGA_SERVER_URL=http://download.savannah.gnu.org/releases/quagga/
+#QUAGGA_SERVER_URL=http://www.quagga.net/download/
 QUAGGA_FILE_TGZ=quagga-0.99.20.tar.gz
 IPUTILS_FILE_TBZ=iputils-s20101006.tar.bz2
 
 # build quagga
 if [ ! -f  $QUAGGA_FILE_TGZ ] ; then
-    wget http://www.quagga.net/download/$QUAGGA_FILE_TGZ \
+    wget $QUAGGA_SERVER_URL$QUAGGA_FILE_TGZ \
 	|| { echo "[Error] wget $QUAGGA_FILE_TGZ" ; exit 1 ; }
 fi
 tar xfz $QUAGGA_FILE_TGZ
