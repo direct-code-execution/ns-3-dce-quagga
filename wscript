@@ -109,5 +109,6 @@ def build(bld):
 #                                  lib=['dl','efence'])
 
     build_dce_tests(module)
+    bld.install_files('${PREFIX}/bin', 'build/bin/ns3test-dce-quagga', chmod=0755 )
     build_dce_examples(module)
     build_dce_kernel_examples(module)
