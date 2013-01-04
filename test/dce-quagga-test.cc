@@ -392,7 +392,7 @@ DceQuaggaTestCase::DoRun (void)
     }
   else
     {
-      ::system ("/bin/rm -rf files-*/var");
+      ::system ("/bin/rm -rf files-*/usr/local/etc/*.pid");
     }
 }
 
@@ -434,7 +434,7 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
     { "bgpd_v6", 120, true},
   };
  
-  ::system ("/bin/rm -rf files-*/var");
+  ::system ("/bin/rm -rf files-*/usr/local/etc/*.pid");
   TypeId tid;
   bool kern = TypeId::LookupByNameFailSafe ("ns3::LinuxSocketFdFactory", &tid);
   for (unsigned int i = 0; i < sizeof(tests) / sizeof(testPair); i++)
