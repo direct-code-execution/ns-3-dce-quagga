@@ -41,9 +41,11 @@ def dce_kw(**kw):
     d['linkflags'] = d.get('linkflags', []) + ['-pie'] + debug_dl
     return d
 
-def build_dce_tests(module):
+def build_dce_tests(module, bld):
     module.add_runner_test(needed=['core', 'dce-quagga', 'internet', 'csma'],
                            source=['test/dce-quagga-test.cc'])
+    module.add_runner_test(needed=['core', 'dce-quagga', 'internet', 'csma'],
+                           source=['test/dce-quagga-test.cc'], linkflags = ['-Wl,--dynamic-linker=' + os.path.abspath (bld.env.PREFIX + '/lib/ldso')], name='vdl')
 
 def build_dce_examples(module):
     dce_examples = [
@@ -108,7 +110,8 @@ def build(bld):
                                   lib=['dl'])
 #                                  lib=['dl','efence'])
 
-    build_dce_tests(module)
+    build_dce_tests(module,bld)
     bld.install_files('${PREFIX}/bin', 'build/bin/ns3test-dce-quagga', chmod=0755 )
+    bld.install_files('${PREFIX}/bin', 'build/bin/ns3test-dce-quagga-vdl', chmod=0755 )
     build_dce_examples(module)
     build_dce_kernel_examples(module)
