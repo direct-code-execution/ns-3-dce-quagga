@@ -213,7 +213,7 @@ DceQuaggaTestCase::DoRun (void)
   else if (m_useKernel == true)
     {
       processManager.SetNetworkStack ("ns3::LinuxSocketFdFactory",
-                                      "Library", StringValue ("libnet-next-2.6.so"));
+                                      "Library", StringValue ("liblinux.so"));
       processManager.Install (nodes);
 
       // IP address configuration
