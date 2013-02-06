@@ -53,8 +53,6 @@ cd ..
 
 # build ns-3-dce-quagga
 cd ns-3-dce-quagga
-. ../ns-3-dce/utils/setenv.sh
-cd ../ns-3-dce-quagga
 ./waf configure --prefix=`pwd`/../build \
 	|| { echo "[Error] ns-3-dce-quagga waf configure" ; exit 1 ; }
 ./waf \
@@ -64,7 +62,7 @@ cd ../ns-3-dce-quagga
 if [ $TEST == "YES" ]
 then
    echo Launch NS3-QUAGGA-TEST-DCE
-   ./build/bin/ns3test-dce-quagga --verbose
+   ./waf --run "ns3test-dce-quagga --verbose"
 fi
 
 

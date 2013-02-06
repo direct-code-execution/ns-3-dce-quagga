@@ -116,15 +116,6 @@ You can build ns-3-dce-quagga as following:
     
 You can see the above PASSed test if everything goes fine. Congrats!
 
-Setting Environment
-*********************
-
-Call the setenv.sh script to correctly setup the environment variables (i.e., PATH, LD_LIBRARY_PATH and PKG_CONFIG_PATH)
-
-::
-
-  $ source ns-3-dce/utils/setenv.sh
-
 Examples
 ********
 Basic
@@ -132,7 +123,7 @@ Basic
 ::
 
   $ cd ns-3-dce-quagga
-  $ ./build/bin/dce-zebra-simple
+  $ ./waf --run dce-zebra-simple
 
 if everything goes fine, you would see the file "routes.log" in the current directory as follows.
 The routes "10.1.0.0/24" and "10.2.0.0/24" was announced by ospfd accordingly.
@@ -155,7 +146,7 @@ Another example of OSPF is generating pcap file.
 ::
 
   $ cd ns-3-dce-quagga
-  $ ./build/bin/dce-quagga-ospfd
+  $ ./waf --run dce-quagga-ospfd
 
 You would see the following parsed output by tcpdump.
 
@@ -181,7 +172,7 @@ The final example of OSPF is using Linux kernel stack via DCE.
 ::
 
   $ cd ns-3-dce-quagga
-  $ ./build/bin/dce-quagga-ospfd --netStack=linux
+  $ ./waf --run "dce-quagga-ospfd --netStack=linux"
 
 then, you would see the following parsed output by tcpdump.
 
