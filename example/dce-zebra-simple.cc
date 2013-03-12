@@ -82,9 +82,9 @@ int main (int argc, char *argv[])
 
   ApplicationContainer apps;
 
-  for (int i = 0; i < nNodes; i++)
+  for (uint32_t i = 0; i < nNodes; i++)
     {
-      for (int j = 0; j < nNodes; j++)
+      for (uint32_t j = 0; j < nNodes; j++)
         {
           Ptr<Node> node = grid.GetNode (i,j);
           dceManager->Install (node);

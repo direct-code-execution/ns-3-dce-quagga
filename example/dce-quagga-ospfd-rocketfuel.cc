@@ -41,6 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("quagga-ospfd-rocketfuel");
 // Parameters
 uint32_t stopTime = 3600;
 
+#ifdef UNUSE
 static void
 SetRlimit ()
 {
@@ -56,11 +57,13 @@ SetRlimit ()
     }
   return;
 }
+#endif
 
 int
 main (int argc, char *argv[])
 {
   //  LogComponentEnable ("quagga-ospfd-rocketfuel", LOG_LEVEL_INFO);
+  std::string topoFile="myscripts/ns-3-dce-quagga/example/3967.weights.intra";
 #ifdef NS3_MPI
   // Distributed simulation setup
   MpiInterface::Enable (&argc, &argv);
@@ -73,6 +76,7 @@ main (int argc, char *argv[])
 
   CommandLine cmd;
   cmd.AddValue ("stopTime", "Time to stop(seconds)", stopTime);
+  cmd.AddValue ("topoFile", "topology file of rocketfuel dataset", topoFile);
   cmd.Parse (argc,argv);
 
   //
@@ -90,7 +94,7 @@ main (int argc, char *argv[])
   NodeContainer nodes;
 
   std::string format ("Rocketfuel");
-  std::string input ("example/3967.weights.intra");
+  std::string input (topoFile);
 
   topoHelp.SetFileName (input);
   topoHelp.SetFileType (format);
@@ -103,7 +107,7 @@ main (int argc, char *argv[])
 
   if (nodes.GetN () == 0)
     {
-      NS_LOG_ERROR ("Problems reading node information the topology file. Failing.");
+      NS_ASSERT ("Problems reading node information the topology file. Failing.");
       return -1;
     }
   if (inFile->LinksSize () == 0)

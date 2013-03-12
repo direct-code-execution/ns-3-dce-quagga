@@ -3,6 +3,11 @@ TEST=NO
 
 cd `dirname $BASH_SOURCE`/../..
 
+
+echo "This script is obsolted."
+echo "Please use bake to install dce and ns-3-dce-quagga. exit"
+exit
+
 QUAGGA_SERVER_URL=http://download.savannah.gnu.org/releases/quagga/
 #QUAGGA_SERVER_URL=http://www.quagga.net/download/
 QUAGGA_FILE_TGZ=quagga-0.99.20.tar.gz

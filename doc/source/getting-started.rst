@@ -63,56 +63,51 @@ or
 
 Building ns-3, DCE, and DCE-Quagga
 **********************************
-
-First you need to download NS-3 DCE using mercurial:
-
-::
-
-  $ mkdir test_build_ns3_dce
-  $ cd test_build_ns3_dce
-  $ hg clone http://code.nsnam.org/furbani/ns-3-dce
-
-then build ns-3-dce:
+To install ns-3-dce-quagga, you can use **bake** as an installation tool as follows.
 
 ::
 
-  $ ns-3-dce/utils/clone_and_compile_ns3_dce.sh -k
+  $ hg clone http://code.nsnam.org/bake bake
+  $ export BAKE_HOME=`pwd`/bake
+  $ export PATH=$PATH:$BAKE_HOME
+  $ export PYTHONPATH=$PYTHONPATH:$BAKE_HOME
 
-Note that "-k" requires the build of ns-3-linux, which supports Linux
-native stack direct code execution with quagga. This is highly
+then build ns-3-dce with quagga:
+
+::
+
+  $ mkdir dce
+  $ cd dce
+  $ bake.py configure -e dce-ns3 -e dce-quagga
+  $ bake.py build
+
+If you want to use dce-quagga with linux kernel, you can configure/build as follows.
+
+::
+
+  $ mkdir dce
+  $ cd dce
+  $ bake.py configure -e dce-linux -e dce-quagga
+  $ bake.py build
+
+Note that "dce-linux" means the build of ns-3-linux, which supports
+Linux native stack direct code execution with quagga. This is highly
 recommended at this moment (2012/04/20) so that Quagga runs
 successfully.
 
 For more information about ns-3-dce core, please refer the `DCE manual
 <http://www-sop.inria.fr/members/Frederic.Urbani/ns3dceccnx/getting-started.html#building-ns-3-and-dce>`_.
 
-After DCE is installed successfully, download ns-3-dce-quagga.
+
+Then you can try an example of ns-3-dce-quagga as follows:
 
 ::
 
-  $ cd test_build_ns3_dce
-  $ hg clone http://code.nsnam.org/thehajime/ns-3-dce-quagga
-
-
-
-You can build ns-3-dce-quagga as following:
-
-::
-
-  $ cd ns-3-dce-quagga
-  $ ./utils/dce_build.sh -k
+  $ cd source/dce
+  $ ./test.py -s dce-quagga
   ...
-  Launch NS3QUAGGATEST-DCE
-  PASS dce-quagga 16.310ms
-    PASS Check that process "ospfd (ns3)" completes correctly. 2.010ms
-    PASS Check that process "bgpd (ns3)" completes correctly. 1.180ms
-    PASS Check that process "radvd (kernel)" completes correctly. 2.000ms
-    PASS Check that process "ripd (kernel)" completes correctly. 1.270ms
-    PASS Check that process "ripngd (kernel)" completes correctly. 1.200ms
-    PASS Check that process "ospfd (kernel)" completes correctly. 3.500ms
-    PASS Check that process "ospf6d (kernel)" completes correctly. 1.490ms
-    PASS Check that process "bgpd (kernel)" completes correctly. 1.740ms
-    PASS Check that process "bgpd_v6 (kernel)" completes correctly. 1.920ms
+  PASS: TestSuite dce-quagga 9.775 s
+  1 of 1 tests passed (1 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
     
 You can see the above PASSed test if everything goes fine. Congrats!
 
@@ -122,7 +117,7 @@ Basic
 #####
 ::
 
-  $ cd ns-3-dce-quagga
+  $ cd source/dce
   $ ./waf --run dce-zebra-simple
 
 if everything goes fine, you would see the file "routes.log" in the current directory as follows.
@@ -145,7 +140,7 @@ Another example of OSPF is generating pcap file.
 
 ::
 
-  $ cd ns-3-dce-quagga
+  $ cd source/dce
   $ ./waf --run dce-quagga-ospfd
 
 You would see the following parsed output by tcpdump.
@@ -171,7 +166,7 @@ The final example of OSPF is using Linux kernel stack via DCE.
 
 ::
 
-  $ cd ns-3-dce-quagga
+  $ cd source/dce
   $ ./waf --run "dce-quagga-ospfd --netStack=linux"
 
 then, you would see the following parsed output by tcpdump.
