@@ -76,21 +76,21 @@ then build ns-3-dce with quagga:
 
 ::
 
-  $ mkdir dce
-  $ cd dce
-  $ ../bake.py configure -e dce-ns3 -e dce-quagga
-  $ ../bake.py download
-  $ ../bake.py build
+  mkdir dce
+  cd dce
+  bake.py configure -e dce-ns3 -e dce-quagga
+  bake.py download
+  bake.py build
 
 If you want to use dce-quagga with linux kernel, you can configure/build as follows.
 
 ::
 
-  $ mkdir dce
-  $ cd dce
-  $ ../bake.py configure -e dce-linux -e dce-quagga
-  $ ../bake.py download
-  $ ../bake.py build
+  mkdir dce
+  cd dce
+  bake.py configure -e dce-linux -e dce-quagga
+  bake.py download
+  bake.py build
 
 Note that "dce-linux" means the build of ns-3-linux, which supports
 Linux native stack direct code execution with quagga. This is highly
