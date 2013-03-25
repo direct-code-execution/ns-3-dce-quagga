@@ -12,7 +12,7 @@ cpp_examples = [
     ("dce-quagga-ospfd-rocketfuel", "False", "False"),
     ("dce-quagga-bgpd-caida", "False", "False"),
     ("dce-quagga-bgpd", "True", "True"),
-    ("dce-quagga-ospf6d", "True", "True"),
+    ("dce-quagga-ospf6d --netStack=linux", "True", "True"),
     ("dce-quagga-ospfd", "True", "True"),
     ("dce-quagga-radvd", "True", "True"),
     ("dce-quagga-ripd", "True", "True"),
