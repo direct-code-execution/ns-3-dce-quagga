@@ -78,24 +78,24 @@ then build ns-3-dce with quagga:
 
   mkdir dce
   cd dce
-  bake.py configure -e dce-ns3 -e dce-quagga
+  bake.py configure -e dce-quagga
   bake.py download
   bake.py build
 
-If you want to use dce-quagga with linux kernel, you can configure/build as follows.
+Note that "dce-quagga" module above includes the build of DCE advanced
+mode (using Linux kernel network stack). This is highly recommended at
+this moment (2012/04/20) so that Quagga runs successfully.
+
+If you want to use dce-quagga with DCE basic mode (i.e., using ns-3 native network stack), you need to build manually without bake..
 
 ::
 
   mkdir dce
   cd dce
-  bake.py configure -e dce-linux -e dce-quagga
-  bake.py download
-  bake.py build
+  cd source/ns-3-dce
+  ./waf configure --with-ns3=../../build
+  ./waf
 
-Note that "dce-linux" means the build of ns-3-linux, which supports
-Linux native stack direct code execution with quagga. This is highly
-recommended at this moment (2012/04/20) so that Quagga runs
-successfully.
 
 For more information about ns-3-dce core, please refer the `DCE manual
 <http://www-sop.inria.fr/members/Frederic.Urbani/ns3dceccnx/getting-started.html#building-ns-3-and-dce>`_.
@@ -105,7 +105,7 @@ Then you can try an example of ns-3-dce-quagga as follows:
 
 ::
 
-  $ cd source/dce
+  $ cd source/ns-3-dce
   $ ./test.py -s dce-quagga
   ...
   PASS: TestSuite dce-quagga 9.775 s
@@ -119,7 +119,7 @@ Basic
 #####
 ::
 
-  $ cd source/dce
+  $ cd source/ns-3-dce
   $ ./waf --run dce-zebra-simple
 
 if everything goes fine, you would see the file "routes.log" in the current directory as follows.
@@ -142,7 +142,7 @@ Another example of OSPF is generating pcap file.
 
 ::
 
-  $ cd source/dce
+  $ cd source/ns-3-dce
   $ ./waf --run dce-quagga-ospfd
 
 You would see the following parsed output by tcpdump.
@@ -168,7 +168,7 @@ The final example of OSPF is using Linux kernel stack via DCE.
 
 ::
 
-  $ cd source/dce
+  $ cd source/ns-3-dce
   $ ./waf --run "dce-quagga-ospfd --netStack=linux"
 
 then, you would see the following parsed output by tcpdump.
