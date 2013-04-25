@@ -78,27 +78,29 @@ then build ns-3-dce with quagga:
 
   mkdir dce
   cd dce
-  bake.py configure -e dce-quagga
+  bake.py configure -e dce-ns3-1.0 -e dce-quagga-1.0
   bake.py download
   bake.py build
 
-Note that "dce-quagga" module above includes the build of DCE advanced
-mode (using Linux kernel network stack). This is highly recommended at
-this moment (2012/04/20) so that Quagga runs successfully.
+note that **dce-quagga-1.0** is the DCE quagga module version 1.0. If you would like to use the development version of the module, you can specify **dce-quagga-dev** as a module name for bake.
 
-If you want to use dce-quagga with DCE basic mode (i.e., using ns-3 native network stack), you need to build manually without bake..
+
+If you want to use dce-quagga with DCE advanced mode (i.e., using
+Linux native network stack), you can build as following commands.
+This is highly recommended at this moment (2012/04/20) so that Quagga
+runs successfully.
 
 ::
 
   mkdir dce
   cd dce
-  cd source/ns-3-dce
-  ./waf configure --with-ns3=../../build
-  ./waf
+  bake.py configure -e dce-linux-1.0 -e dce-quagga-1.0
+  bake.py download
+  bake.py build
 
 
 For more information about ns-3-dce core, please refer the `DCE manual
-<http://www-sop.inria.fr/members/Frederic.Urbani/ns3dceccnx/getting-started.html#building-ns-3-and-dce>`_.
+<../../html/getting-started.html>`_.
 
 
 Then you can try an example of ns-3-dce-quagga as follows:
