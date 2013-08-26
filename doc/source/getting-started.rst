@@ -1,3 +1,4 @@
+
 Introduction
 ------------
 
@@ -78,11 +79,11 @@ then build ns-3-dce with quagga:
 
   mkdir dce
   cd dce
-  bake.py configure -e dce-ns3-1.0 -e dce-quagga-1.0
+  bake.py configure -e dce-ns3-|version| -e dce-quagga-|version|
   bake.py download
   bake.py build
 
-note that **dce-quagga-1.0** is the DCE quagga module version 1.0. If you would like to use the development version of the module, you can specify **dce-quagga-dev** as a module name for bake.
+note that dce-quagga-|version| is the DCE quagga module version |version|. If you would like to use the development version of the module, you can specify **dce-quagga-dev** as a module name for bake.
 
 
 If you want to use dce-quagga with DCE advanced mode (i.e., using
@@ -94,7 +95,7 @@ runs successfully.
 
   mkdir dce
   cd dce
-  bake.py configure -e dce-linux-1.0 -e dce-quagga-1.0
+  bake.py configure -e dce-linux-|version| -e dce-quagga-|version|
   bake.py download
   bake.py build
 
