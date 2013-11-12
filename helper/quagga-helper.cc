@@ -194,6 +194,7 @@ private:
   uint32_t asn;
   std::string router_id;
   std::vector<std::string> *neighbors;
+  std::vector<std::string> *peer_links;
   std::map<std::string, uint32_t> *neighbor_asn;
   std::vector<std::string> *networks;
   bool isDefaultOriginate;
@@ -205,6 +206,7 @@ public:
     neighbors = new std::vector<std::string> ();
     neighbor_asn = new std::map<std::string, uint32_t> ();
     networks = new std::vector<std::string> ();
+    peer_links = new std::vector<std::string> ();
     isDefaultOriginate = false;
   }
   ~BgpConfig ()
@@ -212,6 +214,7 @@ public:
     delete neighbors;
     delete neighbor_asn;
     delete networks;
+    delete peer_links;
   }
   static TypeId
   GetTypeId (void)
@@ -247,6 +250,10 @@ public:
   {
     neighbors->push_back (n);
     neighbor_asn->insert (std::map<std::string, uint32_t>::value_type (n, asn));
+  }
+  void AddPeerLink (std::string n)
+  {
+    peer_links->push_back (n);
   }
   void addNetwork (std::string n)
   {
@@ -303,6 +310,17 @@ public:
           {
             os << "   neighbor " << *it << " default-originate" << std::endl;
           }
+
+        // route-map for peer-neighbor
+        for (std::vector<std::string>::iterator it2 = peer_links->begin (); it2 != peer_links->end (); it2++)
+          {
+            if (*it == *it2)
+              {
+                os << "   neighbor " << *it << " route-map MAP-" << router_id << "-" 
+                   << *it << " out" << std::endl;
+              }
+          }
+
       }
     for (std::vector<std::string>::iterator it = networks->begin (); it != networks->end (); it++)
       {
@@ -333,6 +351,19 @@ public:
       }
     os << "   redistribute connected" << std::endl;
     os << "  exit-address-family" << std::endl;
+
+    // access-list and route-map for peer-link filter-out
+    for (std::vector<std::string>::iterator it = networks->begin (); it != networks->end (); it++)
+      {
+        os << "access-list ALIST-" << router_id << " permit " << *it << std::endl;
+      }
+    for (std::vector<std::string>::iterator it = peer_links->begin (); it != peer_links->end (); it++)
+      {
+        os << "route-map MAP-" << router_id << "-" << *it << " permit 5" << std::endl;
+        os << " match ip address ALIST-" << router_id << std::endl;
+        os << "!" << std::endl;
+      }
+
     os << "!" << std::endl;
   }
 };
@@ -737,6 +768,20 @@ QuaggaHelper::BgpAddNeighbor (Ptr<Node> node, std::string neighbor, uint32_t asn
       node->AggregateObject (bgp_conf);
     }
   bgp_conf->AddNeighbor (neighbor, asn);
+  return;
+}
+
+void
+QuaggaHelper::BgpAddPeerLink (Ptr<Node> node, std::string neighbor)
+{
+  Ptr<BgpConfig> bgp_conf = node->GetObject<BgpConfig> ();
+  if (!bgp_conf)
+    {
+      bgp_conf = CreateObject<BgpConfig> ();
+      bgp_conf->SetAsn (node->GetId ());
+      node->AggregateObject (bgp_conf);
+    }
+  bgp_conf->AddPeerLink (neighbor);
   return;
 }
 

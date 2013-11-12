@@ -154,6 +154,14 @@ public:
   void BgpAddNeighbor (Ptr<Node> node, std::string neighbor, uint32_t asn);
 
   /**
+   * \brief Configure the neighbor as peer link to filter-out the update route
+   * only with node's origin route (via neighbor A.B.C.D route-map MAP out command).
+   *
+   * \param neighbor The string of the experssion of a remote neighbor (IPv4/v6 address).
+   */
+  void BgpAddPeerLink (Ptr<Node> node, std::string neighbor);
+
+  /**
    * \brief Enable the ospf6d daemon (OSPFv3) to the nodes.
    *
    * \param nodes The node(s) to enable OSPFv3 (quagga ospf6d).

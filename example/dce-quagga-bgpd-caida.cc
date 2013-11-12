@@ -80,6 +80,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("stopTime", "Time to stop(seconds)", stopTime);
   cmd.Parse (argc,argv);
 
+  LogComponentEnable ("DceQuaggaBgpdCaida", LOG_LEVEL_ALL);
   SetRlimit ();
 
   //
@@ -91,7 +92,8 @@ int main (int argc, char *argv[])
   NodeContainer nodes;
 
   std::string format ("Caida");
-  std::string input ("./example/asrel-as2500.txt");
+  std::string input ("./myscripts/ns-3-dce-quagga/example/asrel-as2500.txt");
+  input = "./myscripts/ns-3-dce-quagga/example/caida-5node.txt";
 
   topoHelp.SetFileName (input);
   topoHelp.SetFileType (format);
@@ -131,12 +133,15 @@ int main (int argc, char *argv[])
     }
 
   DceManagerHelper processManager;
-  processManager.SetLoader ("ns3::DlmLoaderFactory");
-  processManager.SetTaskManagerAttribute ("FiberManagerType",
-                                          EnumValue (0));
   processManager.SetNetworkStack ("ns3::LinuxSocketFdFactory",
                                   "Library", StringValue ("liblinux.so"));
   processManager.Install (nodes);
+  LinuxStackHelper stack;
+  stack.Install (nodes);
+  Ipv4AddressHelper address;
+  address.SetBase ("10.0.0.0", "255.255.255.0");
+  Ipv4InterfaceContainer interfaces;
+
   QuaggaHelper quagga;
   quagga.EnableBgp (nodes);
 
@@ -145,10 +150,12 @@ int main (int argc, char *argv[])
   for (int i = 0; i < totlinks; i++)
     {
       ndc[i] = p2p.Install (nc[i]);
+      // assgin ip addresses
+      interfaces = address.Assign (ndc[i]);
 
       std::string link_base;
       std::stringstream str;
-      str << "10." << (i / 256) << "." << (i % 256) << ".";
+      str << "10." << (i / 256) << "." << (i % 256) << "";
       link_base = str.str ();
       // IP address configuration
       AddAddress (nc[i].Get (0), Seconds (0.1), ndc[i].Get (0)->GetIfIndex (), (link_base + ".1/24").c_str ());
@@ -159,8 +166,17 @@ int main (int argc, char *argv[])
 
       quagga.BgpAddNeighbor (nc[i].Get (0), link_base + ".2", quagga.GetAsn (nc[i].Get (1)));
       quagga.BgpAddNeighbor (nc[i].Get (1), link_base + ".1", quagga.GetAsn (nc[i].Get (0)));
-      quagga.Install (nc[i]);
 
+      // peer link
+      iter = inFile->LinksBegin ();
+      std::advance (iter, i);
+      if (iter->GetAttribute ("Relationship") == "0")
+        {
+          NS_LOG_DEBUG ("linkattr " << iter->GetAttribute ("Relationship"));
+          quagga.BgpAddPeerLink (nc[i].Get (0), link_base + ".2");
+          quagga.BgpAddPeerLink (nc[i].Get (1), link_base + ".1");
+        }
+      quagga.Install (nc[i]);
     }
 
 
