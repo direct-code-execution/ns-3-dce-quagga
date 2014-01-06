@@ -187,17 +187,17 @@ DceQuaggaTestCase::DoRun (void)
 
       ipv4AddrHelper.SetBase ("10.0.0.0", "255.255.255.0");
       ipv4AddrHelper.Assign (devices);
-      ipv6AddrHelper.NewNetwork ("2001:db8:0:1::", Ipv6Prefix (64));
+      ipv6AddrHelper.SetBase ("2001:db8:0:1::", Ipv6Prefix (64));
       ipv6AddrHelper.Assign (devices);
 
       ipv4AddrHelper.SetBase ("11.0.0.0", "255.255.255.0");
       ipv4AddrHelper.Assign (dev1);
-      ipv6AddrHelper.NewNetwork ("2001:db8:0:2::", Ipv6Prefix (64));
+      ipv6AddrHelper.NewNetwork ();
       ipv6AddrHelper.Assign (dev1);
 
       ipv4AddrHelper.SetBase ("12.0.0.0", "255.255.255.0");
       ipv4AddrHelper.Assign (dev2);
-      ipv6AddrHelper.NewNetwork ("2001:db8:0:3::", Ipv6Prefix (64));
+      ipv6AddrHelper.NewNetwork ();
       ipv6AddrHelper.Assign (dev2);
 
       processManager.SetNetworkStack ("ns3::Ns3SocketFdFactory");
@@ -441,7 +441,8 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
     {
       AddTestCase (new DceQuaggaTestCase (std::string (tests[i].name),
                                           Seconds (tests[i].duration), tests[i].useKernel,
-                                         (!kern && tests[i].useKernel)));
+                                          (!kern && tests[i].useKernel)),
+                   TestCase::QUICK);
     }
 }
 

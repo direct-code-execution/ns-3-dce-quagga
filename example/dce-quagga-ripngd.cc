@@ -94,7 +94,7 @@ int main (int argc, char *argv[])
 
       ipv4AddrHelper.SetBase ("10.0.0.0", "255.255.255.0");
       ipv4AddrHelper.Assign (devices);
-      ipv6AddrHelper.NewNetwork ("2001:db8:0:1::", Ipv6Prefix (64));
+      ipv6AddrHelper.SetBase ("2001:db8:0:1::", Ipv6Prefix (64));
       Ipv6InterfaceContainer interfaces = ipv6AddrHelper.Assign (devices);
 
       processManager.SetNetworkStack ("ns3::Ns3SocketFdFactory");
