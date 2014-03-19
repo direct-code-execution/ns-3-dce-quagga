@@ -437,8 +437,14 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
   ::system ("/bin/rm -rf files-*/usr/local/etc/*.pid");
   TypeId tid;
   bool kern = TypeId::LookupByNameFailSafe ("ns3::LinuxSocketFdFactory", &tid);
+  // for the moment: not supported quagga for freebsd
+  std::string filePath = SearchExecFile ("DCE_PATH", "liblinux.so", 0);
   for (unsigned int i = 0; i < sizeof(tests) / sizeof(testPair); i++)
     {
+      if (filePath.length () <= 0 && (kern && tests[i].useKernel))
+        {
+          continue;
+        }
       AddTestCase (new DceQuaggaTestCase (std::string (tests[i].name),
                                           Seconds (tests[i].duration), tests[i].useKernel,
                                           (!kern && tests[i].useKernel)),
