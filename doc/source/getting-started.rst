@@ -101,7 +101,7 @@ runs successfully.
 
 
 For more information about ns-3-dce core, please refer the `DCE manual
-<../../html/getting-started.html>`_.
+<../../manual/html/getting-started.html>`_.
 
 
 Then you can try an example of ns-3-dce-quagga as follows:
