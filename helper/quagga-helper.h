@@ -89,6 +89,14 @@ public:
   void EnableOspf (NodeContainer nodes, const char *network);
 
   /**
+   * \brief Set router-id param of OSPF to the node.
+   *
+   * \param node The node to set router-id of OSPF instance.
+   * \param routerid The router id value.
+   */
+  void SetOspfRouterId (Ptr<Node> node, const char * routerid);
+
+  /**
    * \brief Configure the debug option to the ospfd daemon (via debug ospf xxx).
    *
    * \param nodes The node(s) to configure the options.

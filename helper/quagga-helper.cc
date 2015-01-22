@@ -102,6 +102,7 @@ std::ostream& operator << (std::ostream& os, QuaggaConfig const& config)
 class OspfConfig : public Object
 {
 private:
+  std::string router_id;
   std::map<std::string, uint32_t> *networks;
 public:
   OspfConfig ()
@@ -137,6 +138,12 @@ public:
   addNetwork (std::string prefix, uint32_t area)
   {
     networks->insert (std::map<std::string, uint32_t>::value_type (prefix, area));
+  }
+
+  void
+  SetRouterId (const char * router_id)
+  {
+    this->router_id = std::string (router_id);
   }
 
   void
@@ -180,6 +187,9 @@ public:
         os << "  network " << (*i).first << " area " << (*i).second << std::endl;
       }
     os << " redistribute connected" << std::endl;
+    if (router_id != "") {
+      os << " ospf router-id " << router_id << std::endl;
+    }
     os << "!" << std::endl;
   }
   std::vector<uint32_t> *iflist;
@@ -645,6 +655,20 @@ QuaggaHelper::EnableOspf (NodeContainer nodes, const char *network)
     }
   return;
 }
+
+void
+QuaggaHelper::SetOspfRouterId (Ptr<Node> node, const char * routerid)
+{
+  Ptr<OspfConfig> ospf_conf = node->GetObject<OspfConfig> ();
+  if (!ospf_conf)
+    {
+      ospf_conf = new OspfConfig ();
+      node->AggregateObject (ospf_conf);
+    }
+  ospf_conf->SetRouterId (routerid);
+  return;
+}
+
 
 void
 QuaggaHelper::EnableOspfDebug (NodeContainer nodes)
