@@ -393,6 +393,7 @@ DceQuaggaTestCase::DoRun (void)
   else
     {
       ::system ("/bin/rm -rf files-*/usr/local/etc/*.pid");
+      ::system ("find files-* -name 'zserv.ap*' | xargs rm -f");
     }
 }
 
@@ -435,6 +436,7 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
   };
  
   ::system ("/bin/rm -rf files-*/usr/local/etc/*.pid");
+  ::system ("find files-* -name 'zserv.ap*' | xargs rm -f");
   TypeId tid;
   bool kern = TypeId::LookupByNameFailSafe ("ns3::LinuxSocketFdFactory", &tid);
   // for the moment: not supported quagga for freebsd
