@@ -17,7 +17,7 @@ def configure(conf):
     ns3waf.check_modules(conf, ['point-to-point', 'tap-bridge', 'netanim'], mandatory = False)
     ns3waf.check_modules(conf, ['wifi', 'point-to-point', 'csma', 'mobility'], mandatory = False)
     ns3waf.check_modules(conf, ['point-to-point-layout'], mandatory = False)
-    ns3waf.check_modules(conf, ['topology-read', 'applications', 'visualizer'], mandatory = False)
+    ns3waf.check_modules(conf, ['topology-read', 'internet-apps', 'applications', 'visualizer'], mandatory = False)
     conf.check_tool('compiler_cc')
 
     conf.env.append_value('CXXFLAGS', '-I/usr/include/python2.6')
@@ -46,7 +46,7 @@ def build_dce_examples(module):
                        target='bin/dce-zebra-simple',
                        source=['example/dce-zebra-simple.cc'])
 
-    module.add_example(needed = ['core', 'internet', 'dce-quagga', 'point-to-point', 'applications', 'topology-read'],
+    module.add_example(needed = ['core', 'internet', 'dce-quagga', 'point-to-point', 'internet-apps,' 'applications', 'topology-read'],
                        target='bin/dce-quagga-ospfd-rocketfuel',
                        source=['example/dce-quagga-ospfd-rocketfuel.cc'])
 
