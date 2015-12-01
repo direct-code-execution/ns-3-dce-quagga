@@ -127,8 +127,8 @@ DceQuaggaTestCase::CsmaRxCallback (std::string context, Ptr<const Packet> origin
 }
 
 DceQuaggaTestCase::DceQuaggaTestCase (std::string testname, Time maxDuration, bool useK, bool skip)
-  : TestCase (skip ? "(SKIP) " + testname + (useK ? " (kernel)" : " (ns3)") : "" "Check that process \"" + testname
-              + (useK ? " (kernel)" : " (ns3)") + "\" completes correctly."),
+  : TestCase (skip ? "(SKIP) " + testname + (useK ? " (kernel)" : " (ns3)") : testname
+              + (useK ? " (kernel)" : " (ns3)")),
     m_testname (testname),
     m_maxDuration (maxDuration),
     m_useKernel (useK),
