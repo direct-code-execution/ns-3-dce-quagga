@@ -1,11 +1,11 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import os
-import Options
 import os.path
 import ns3waf
 import sys
-# local modules
+
+from waflib import Utils, Scripting, Configure, Build, Options, TaskGen, Context, Task, Logs, Errors
 
 
 def options(opt):
