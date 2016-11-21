@@ -18,7 +18,6 @@ def configure(conf):
     ns3waf.check_modules(conf, ['wifi', 'point-to-point', 'csma', 'mobility'], mandatory = False)
     ns3waf.check_modules(conf, ['point-to-point-layout'], mandatory = False)
     ns3waf.check_modules(conf, ['topology-read', 'internet-apps', 'applications', 'visualizer'], mandatory = False)
-    conf.check_tool('compiler_cc')
 
     conf.env.append_value('CXXFLAGS', '-I/usr/include/python2.6')
     conf.env.append_value('LINKFLAGS', '-pthread')
