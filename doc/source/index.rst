@@ -6,6 +6,8 @@
 Welcome to NS3 DCE Quagga
 ===================================
 
+* `Doxygen <./doxygen/html/>`_: Documentation of the public APIs
+
 Contents:
 
 .. toctree::
