@@ -14,8 +14,13 @@ quagga porting into ns-3-simu (former name of ns-3-dce). You can look
 at his effort at the `link
 <https://www.nsnam.org/wiki/index.php/Real_World_Application_Integration>`_.
 
-Current Status (2012/4/23)
-**************************
+Current Status
+**************
+
+Quagga support in DCE is unmaintained as of March 2020, but still is
+believed to work. It was last actively worked on in 2012.  It is not
+clear whether the `upstream quagga project <https://quagga.net/>`_ is
+still completely compatible.   
 
 Quagga support on DCE does not fully support all the environment that
 DCE has. The following shows the limited availability of each
@@ -49,17 +54,7 @@ Prerequisite
 Quagga support on DCE requires several packages:
 autoconf, automake, flex, git-core, wget, g++, libc-dbg, bison, indent, pkgconfig, libssl-dev, libsysfs-dev, gawk
 
-You need to install the correspondent packages in advance.
-
-::
-
-  $ sudo apt-get install git-core (in ubuntu/debian)
-
-or
-
-::
-
-  $ sudo yum install git (in fedora)
+You need to install the prerequisite packages in advance.
 
 
 Building ns-3, DCE, and DCE-Quagga
@@ -68,10 +63,11 @@ To install ns-3-dce-quagga, you can use **bake** as an installation tool as foll
 
 ::
 
-  $ hg clone http://code.nsnam.org/bake bake
+  $ git clone https://gitlab.com/nsnam/bake.git
   $ export BAKE_HOME=`pwd`/bake
   $ export PATH=$PATH:$BAKE_HOME
   $ export PYTHONPATH=$PYTHONPATH:$BAKE_HOME
+  $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BAKE_HOME
 
 then build ns-3-dce with quagga:
 
@@ -88,7 +84,7 @@ note that dce-quagga-|version| is the DCE quagga module version |version|. If yo
 
 If you want to use dce-quagga with DCE advanced mode (i.e., using
 Linux native network stack), you can build as following commands.
-This is highly recommended at this moment (2012/04/20) so that Quagga
+This is highly recommended at this moment so that Quagga
 runs successfully.
 
 ::
@@ -104,7 +100,7 @@ For more information about ns-3-dce core, please refer the `DCE manual
 <../../manual/html/getting-started.html>`_.
 
 
-Then you can try an example of ns-3-dce-quagga as follows:
+Then you can try some unit tests of ns-3-dce-quagga as follows:
 
 ::
 
