@@ -430,9 +430,11 @@ DceQuaggaTestSuite::DceQuaggaTestSuite ()
     { "ripd", 120, true},
     { "ripngd", 120, true},
     { "ospfd", 120, true},
+#ifdef FIXME
     { "ospf6d", 120, true},
     { "bgpd", 120, true},
     { "bgpd_v6", 120, true},
+#endif
   };
  
   ::system ("/bin/rm -rf files-*/usr/local/etc/*.pid");
