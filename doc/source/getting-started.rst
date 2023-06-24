@@ -17,10 +17,12 @@ at his effort at the `link
 Current Status
 **************
 
-Quagga support in DCE is unmaintained as of March 2020, but still is
+Quagga support in DCE is unmaintained as of June 2023, but still is
 believed to work. It was last actively worked on in 2012.  It is not
 clear whether the `upstream quagga project <https://quagga.net/>`_ is
-still completely compatible.   
+still completely compatible.  Some people have started to use
+Free Range Routing (FRR) in place of quagga, but we do not have
+documentation for that. 
 
 Quagga support on DCE does not fully support all the environment that
 DCE has. The following shows the limited availability of each
